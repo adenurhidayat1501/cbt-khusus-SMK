@@ -72,20 +72,20 @@ if [[ "$1" == "-y" || "$1" == "--yes" ]]; then
     AUTO_ACCEPT=true
 fi
 
-# Detect Server IP
-SERVER_IP=$(curl -s -m 5 https://api.ipify.org || hostname -I | awk '{print $1}')
+# Detect Server IP (instant via local network interface)
+SERVER_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
 if [ -z "$SERVER_IP" ]; then
-    SERVER_IP="127.0.0.1"
+    SERVER_IP=$(curl -s -m 2 https://api.ipify.org 2>/dev/null || echo "127.0.0.1")
 fi
 
 WEB_ROOT="/var/www/garudacbt"
 DB_NAME="garudacbt"
 DB_USER="garudacbt"
 
-# Generate random secure DB password
-RANDOM_PASS=$(tr -dc A-Za-z0-9 2>/dev/null | head -c 16 || openssl rand -base64 12 | tr -dc A-Za-z0-9)
+# Generate random secure DB password instantly without blocking stdin
+RANDOM_PASS=$(openssl rand -hex 8 2>/dev/null || date +%s%N 2>/dev/null | sha256sum | head -c 16)
 if [ -z "$RANDOM_PASS" ]; then
-    RANDOM_PASS="GarudaCBT$(date +%s)"
+    RANDOM_PASS="GarudaPass$(date +%s)"
 fi
 DB_PASS="$RANDOM_PASS"
 
