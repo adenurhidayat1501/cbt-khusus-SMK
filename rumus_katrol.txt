@@ -1,0 +1,25 @@
+NY = Nilai Hasil Konversi
+YA = Nilai Terbesar Konversi (Yang Kita Inginkan)
+YB = Nilai Terkecil Konversi (Yang Kita Inginkan)
+XA = Nilai Terbesar Asli (Dari Daftar Nilai)
+XB = Nilai Terkecil Asli (Dari Daftar Nilai
+NX = Nilai yang Ingin Dikonversi (Nilai Rujukan)
+
+((YA-YB)/(XA-XB))*(NX-XB)+YB
+
+
+action!!
+nilai_max = find nilai siswa terbesar
+nilai_min = find nilai siswa terkecil
+hasil_max = input batas nilai terbesar
+hasil_min = input batas nilai terkecil
+
+urutan:
+nilai = nilai_max dikurangi nilai_min
+hasil = hasil_max dikurangi hasil_min
+hasil:
+nilai_hasil = nilai dibagi hasil
+
+convert!!
+skor = skor siswa dari hasil ujian
+nilai konversi = nilai_hasil dikali (skor dikurangi hasil_min) ditambah nilai_min

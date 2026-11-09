@@ -1,0 +1,45 @@
+# CodeIgniter Environment & Logs
+*/config/development
+application/logs/*
+!application/logs/index.html
+!application/logs/.htaccess
+
+# Cache & Sessions
+*/cache/*
+!*/cache/index.html
+!*/cache/.htaccess
+
+# User Uploads & Backups (Preserve default placeholders & .htaccess)
+backups/*
+!backups/.htaccess
+!backups/index.html
+
+uploads/*
+!uploads/.htaccess
+!uploads/index.html
+!uploads/profiles/
+!uploads/foto_siswa/
+!uploads/foto_guru/
+!uploads/bank_soal/
+
+# Dependencies
+/vendor/
+/composer.phar
+
+# Local Database Dumps & Secrets
+*.sql.gz
+*.sql.tar.gz
+*.env
+*.log
+!assets/app/db/master.sql
+
+# IDE & OS Specific Files
+.idea/
+.vscode/
+*.iml
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+desktop.ini
+/nbproject/private/

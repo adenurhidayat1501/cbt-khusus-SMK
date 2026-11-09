@@ -1,0 +1,61 @@
+1. cek token
+
+jika token = true;
+2. cek log
+	a. jika tidak ada log maka
+		- buat log
+		- izinkan
+		- buat soal baru (baru = true)
+	b. jika ada log
+		a. jika jadwal pake reset_login, cek log ip-address, device, agent
+			a. isi log sama maka
+				- izinkan
+				- lanjutkan soal (baru = false)
+			b. jika log tidak sama
+				a. jika log->reset = 1 maka
+					- izinkan
+					- update log->reset ke 0
+					- lanjutkan soal (baru = false)
+				b. jika log->reset = 0 maka
+					- tidak diizinkan
+		b. jika tidak pake reset_login maka
+			- izinkan
+			- lanjutkan soal (baru = false)
+
+jika diizinkan = true
+3. cek durasi
+	a. jika tidak ada durasi
+		- buat durasi
+		- buat soal baru (baru = true)
+		- tidak perlu reset waktu (admin)
+	b. jika ada durasi
+		a. jika reset = 0 (tidak reset)
+			a. jika waktu ujian habis
+				- tidak diizinkan perlu reset waktu (admin)
+			b. jika masih ada waktu
+				- lanjutkan soal (baru = false)
+				- tidak perlu reset waktu (admin)
+		b. jika reset = 1 (reset durasi)
+			- lanjutkan soal (baru = false)
+			- update reset ke 0
+			- update menit ke 0
+			- tidak perlu reset waktu (admin)
+		c. jika reset = 2 (lanjutkan durasi)
+			- lanjutkan soal (baru = false)
+			- update reset ke 0
+			- tidak perlu reset waktu (admin)
+		d. jika reset = 3 (ulangi ujian)
+			- buat soal baru (baru = true)
+			- update reset ke 0
+			- tidak perlu reset waktu (admin)
+
+jika diizinkan = true dan ada waktu
+4. cek soal
+	a. jika ada soal
+		a. jika log soal baru = true dan durasi soal baru = true maka
+			- hapus soal siswa
+			- create soal siswa
+		b. jika tidak
+			- lanjutkan soal
+	b. jika tidak ada soal
+		- create soal siswa

@@ -1,0 +1,7 @@
+Login   : http://localhost/main/mobile/main/login
+form    : identity, password
+
+Logout  : http://localhost/main/mobile/main/logout
+
+DASHBOARD   : http://localhost/main/mobile/main/dashboard
+form    : id_user, token
