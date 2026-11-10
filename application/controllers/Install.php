@@ -200,105 +200,154 @@ class Install extends CI_Controller {
     }
 
     public function createSetting(){
-        $nama_aplikasi = $this->input->post('nama_aplikasi', true);
-        $sekolah = $this->input->post('nama_sekolah', true);
-        $jenjang = $this->input->post('jenjang', true);
-        $satuan_pendidikan = $this->input->post('satuan_pendidikan', true);
-        $kepsek = $this->input->post('kepsek', true);
-        $alamat = $this->input->post('alamat', true);
-        $kota = $this->input->post('kota', true);
-        $kec = $this->input->post('kec', true);
-        $desa = $this->input->post('desa', true);
-        $tlp = $this->input->post('tlp', true);
+        try {
+            $nama_aplikasi = $this->input->post('nama_aplikasi', true);
+            $sekolah = $this->input->post('nama_sekolah', true);
+            $jenjang = $this->input->post('jenjang', true);
+            $satuan_pendidikan = $this->input->post('satuan_pendidikan', true);
+            $kepsek = $this->input->post('kepsek', true);
+            $alamat = $this->input->post('alamat', true);
+            $kota = $this->input->post('kota', true);
+            $kec = $this->input->post('kec', true);
+            $desa = $this->input->post('desa', true);
+            $tlp = $this->input->post('tlp', true);
 
-        $insert = [
-            'id_setting' => 1,
-            'sekolah' => $sekolah,
-            'jenjang' => $jenjang,
-            'satuan_pendidikan' => $satuan_pendidikan,
-            'alamat' => $alamat,
-            'desa' => $desa,
-            'kota' => $kota,
-            'kecamatan' => $kec,
-            'telp' => $tlp,
-            'kepsek' => $kepsek,
-            'nama_aplikasi' => $nama_aplikasi,
-        ];
-        $data['insert'] = $this->db->insert('setting', $insert);
-        $data['saved'] = $this->getSaved();
-        $this->output_json($data);
+            $insert = [
+                'id_setting' => 1,
+                'sekolah' => $sekolah,
+                'jenjang' => $jenjang,
+                'satuan_pendidikan' => $satuan_pendidikan,
+                'alamat' => $alamat,
+                'desa' => $desa,
+                'kota' => $kota,
+                'kecamatan' => $kec,
+                'telp' => $tlp,
+                'kepsek' => $kepsek,
+                'nama_aplikasi' => $nama_aplikasi,
+            ];
+
+            if ($this->db->where('id_setting', 1)->get('setting')->row()) {
+                $data['insert'] = $this->db->update('setting', $insert, ['id_setting' => 1]);
+            } else {
+                $data['insert'] = $this->db->insert('setting', $insert);
+            }
+
+            $data['saved'] = $this->getSaved();
+            $this->output_json($data);
+        } catch (\Throwable $e) {
+            $this->output_json(['insert' => false, 'message' => $e->getMessage()]);
+        }
     }
 
     public function createAdmin() {
-        if ($this->db->table_exists('users') && $this->db->count_all('users') > 0) {
-            if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin()) {
-                $this->output_json(['status' => false, 'message' => 'Administrator sudah ada. Akses ditolak.']);
-                return;
+        try {
+            $nama = $this->input->post('nama_lengkap', true);
+            $username = $this->input->post('username', true);
+            $password = $this->input->post('password', true);
+
+            $namaAdmin = explode(' ', trim($nama ?? ''));
+            $first_name = $namaAdmin[0] ?? 'Admin';
+            $last_name = count($namaAdmin) > 1 ? end($namaAdmin) : '';
+            $additional_data = [
+                'first_name'	=> $first_name,
+                'last_name'		=> $last_name
+            ];
+            $group = array('1');
+            $clean_name = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($nama ?? 'admin'));
+            $email = ($clean_name ?: 'admin') . '@admin.com';
+
+            $existing = $this->db->where('username', $username)->get('users')->row();
+            if ($existing) {
+                $update_user = [
+                    'password' => password_hash($password, PASSWORD_BCRYPT),
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'email' => $email,
+                    'active' => 1
+                ];
+                $create = $this->db->update('users', $update_user, ['id' => $existing->id]);
+                $this->db->replace('users_groups', ['user_id' => $existing->id, 'group_id' => 1]);
+            } else {
+                $create = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
             }
+
+            $data['admin'] = (bool)$create;
+            $this->output_json($data);
+        } catch (\Throwable $e) {
+            $this->output_json(['admin' => false, 'message' => $e->getMessage()]);
         }
-
-        $nama = $this->input->post('nama_lengkap', true);
-        $username = $this->input->post('username', true);
-        $password = $this->input->post('password', true);
-
-        $namaAdmin = explode(' ', $nama ?? '');
-        $first_name = $namaAdmin[0];
-        $last_name = end($namaAdmin);
-        $additional_data = [
-            'first_name'	=> $first_name,
-            'last_name'		=> $last_name
-        ];
-        $group = array('1');
-        $email = strtolower($nama ?? '').'@admin.com';
-        $create = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
-        $data['admin'] = $create;
-        $this->output_json($data);
     }
 
     public function createApp() {
-        $nama = $this->input->post('nama_lengkap', true);
-        $username = $this->input->post('username', true);
-        $password = $this->input->post('password', true);
+        try {
+            $nama = $this->input->post('nama_lengkap', true);
+            $username = $this->input->post('username', true);
+            $password = $this->input->post('password', true);
 
-        $nama_aplikasi = $this->input->post('nama_aplikasi', true);
-        $sekolah = $this->input->post('nama_sekolah', true);
-        $jenjang = $this->input->post('jenjang', true);
-        $satuan_pendidikan = $this->input->post('satuan', true);
-        $kepsek = $this->input->post('kepsek', true);
-        $alamat = $this->input->post('alamat', true);
-        $kota = $this->input->post('kota', true);
-        $kec = $this->input->post('kec', true);
-        $desa = $this->input->post('desa', true);
-        $prov = $this->input->post('prov', true);
+            $nama_aplikasi = $this->input->post('nama_aplikasi', true);
+            $sekolah = $this->input->post('nama_sekolah', true);
+            $jenjang = $this->input->post('jenjang', true);
+            $satuan_pendidikan = $this->input->post('satuan', true);
+            $kepsek = $this->input->post('kepsek', true);
+            $alamat = $this->input->post('alamat', true);
+            $kota = $this->input->post('kota', true);
+            $kec = $this->input->post('kec', true);
+            $desa = $this->input->post('desa', true);
+            $prov = $this->input->post('prov', true);
 
-        $insert = [
-            'id_setting' => 1,
-            'sekolah' => $sekolah,
-            'jenjang' => $jenjang,
-            'satuan_pendidikan' => $satuan_pendidikan,
-            'alamat' => $alamat,
-            'desa' => $desa,
-            'kota' => $kota,
-            'kecamatan' => $kec,
-            'provinsi' => $prov,
-            'kepsek' => $kepsek,
-            'nama_aplikasi' => $nama_aplikasi,
-        ];
+            $insert = [
+                'id_setting' => 1,
+                'sekolah' => $sekolah,
+                'jenjang' => $jenjang,
+                'satuan_pendidikan' => $satuan_pendidikan,
+                'alamat' => $alamat,
+                'desa' => $desa,
+                'kota' => $kota,
+                'kecamatan' => $kec,
+                'provinsi' => $prov,
+                'kepsek' => $kepsek,
+                'nama_aplikasi' => $nama_aplikasi,
+            ];
 
-        $namaAdmin = explode(' ', $nama ?? '');
-        $first_name = $namaAdmin[0];
-        $last_name = end($namaAdmin);
-        $additional_data = [
-            'first_name'	=> $first_name,
-            'last_name'		=> $last_name
-        ];
-        $group = array('1');
-        $email = strtolower($nama ?? '').'@admin.com';
-        $create = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+            // Update setting if id 1 already exists, else insert
+            if ($this->db->where('id_setting', 1)->get('setting')->row()) {
+                $data['insert'] = $this->db->update('setting', $insert, ['id_setting' => 1]);
+            } else {
+                $data['insert'] = $this->db->insert('setting', $insert);
+            }
 
-        $data['insert'] = $this->db->insert('setting', $insert);
-        $data['admin'] = $create;
-        $this->output_json($data);
+            $namaAdmin = explode(' ', trim($nama ?? ''));
+            $first_name = $namaAdmin[0] ?? 'Admin';
+            $last_name = count($namaAdmin) > 1 ? end($namaAdmin) : '';
+            $additional_data = [
+                'first_name'	=> $first_name,
+                'last_name'		=> $last_name
+            ];
+            $group = array('1');
+            $clean_name = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($nama ?? 'admin'));
+            $email = ($clean_name ?: 'admin') . '@admin.com';
+
+            $existing = $this->db->where('username', $username)->get('users')->row();
+            if ($existing) {
+                $update_user = [
+                    'password' => password_hash($password, PASSWORD_BCRYPT),
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'email' => $email,
+                    'active' => 1
+                ];
+                $create = $this->db->update('users', $update_user, ['id' => $existing->id]);
+                $this->db->replace('users_groups', ['user_id' => $existing->id, 'group_id' => 1]);
+            } else {
+                $create = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+            }
+
+            $data['admin'] = (bool)$create;
+            $data['insert'] = (bool)$data['insert'];
+            $this->output_json($data);
+        } catch (\Throwable $e) {
+            $this->output_json(['admin' => false, 'insert' => false, 'message' => $e->getMessage()]);
+        }
     }
 
     /*

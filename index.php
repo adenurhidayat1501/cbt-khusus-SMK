@@ -149,16 +149,29 @@ if (!isset($view_folder[0]) && is_dir(APPPATH . 'views' . DIRECTORY_SEPARATOR)) 
 define('VIEWPATH', $view_folder . DIRECTORY_SEPARATOR);
 //require_once BASEPATH . 'core/CodeIgniter.php';
 
+$db = [];
 include 'application/config/database.php';
-$database = $db['default']['database'];
-if ($database == '') {
-    header("Location: installer");
-} else {
-    $data = $db['default'];
-    $mysqli = new mysqli($data['hostname'], $data['username'], $data['password'], $data['database']);
-    if (mysqli_connect_errno()) {
-        $mysqli->close();
+$database = isset($db['default']['database']) ? $db['default']['database'] : '';
+if (empty($database)) {
+    if (is_dir('installer')) {
         header("Location: installer");
+        exit;
+    } else {
+        require_once BASEPATH . 'core/CodeIgniter.php';
+    }
+} else {
+    $data = isset($db['default']) ? $db['default'] : [];
+    $mysqli = @new mysqli($data['hostname'], $data['username'], $data['password'], $data['database']);
+    if ($mysqli->connect_errno) {
+        if (!is_dir('installer')) {
+            die("<h3>Gagal Terhubung ke Database MySQL/MariaDB</h3>"
+                . "<p><b>Error:</b> " . htmlspecialchars($mysqli->connect_error) . "</p>"
+                . "<p>Pastikan user dan password database di <code>application/config/database.php</code> sudah sesuai dengan MariaDB di VPS.</p>");
+        } else {
+            $mysqli->close();
+            header("Location: installer");
+            exit;
+        }
     } else {
         $mysqli->close();
         require_once BASEPATH . 'core/CodeIgniter.php';

@@ -1,5 +1,6 @@
 <?php
 error_reporting(0);
+if (!defined('BASEPATH')) define('BASEPATH', TRUE);
 $db_config_path = '../application/config/database.php';
 
 if (file_exists($db_config_path)) {

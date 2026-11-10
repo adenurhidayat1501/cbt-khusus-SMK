@@ -3,6 +3,9 @@ setlocal enabledelayedexpansion
 title SADUCI CBT - Push to GitHub Helper
 
 cd /d "%~dp0"
+if exist "cbt-sekolah-main\index.php" (
+    cd cbt-sekolah-main
+)
 if exist "main\index.php" (
     cd main
 )
@@ -44,67 +47,98 @@ if %errorlevel% neq 0 (
 echo [OK] Git terdeteksi di sistem.
 echo.
 
-:: 2. Prompt for GitHub Repository URL
+:: 2. Auto-configure Git User and disable LF/CRLF warnings
+git config --global user.name >nul 2>nul
+if %errorlevel% neq 0 (
+    echo [*] Mengatur identitas Git user.name & user.email...
+    git config --global user.name "SMPN Satu Atap 2 Cipatujah"
+    git config --global user.email "admin@saduci.sch.id"
+)
+git config core.autocrlf false >nul 2>nul
+
+:: 3. Prompt for GitHub Repository URL
 set "REPO_URL="
-set /p "REPO_URL=Masukkan URL Repository GitHub Anda (contoh: https://github.com/adenurhidayat1501/cbt-sekolah.git): "
+set /p "REPO_URL=Masukkan URL Repository GitHub Anda [Enter untuk https://github.com/adenurhidayat1501/cbt-sekolah.git]: "
 
 if "%REPO_URL%"=="" (
-    echo [ERROR] URL repository tidak boleh kosong!
-    pause
-    exit /b 1
+    set "REPO_URL=https://github.com/adenurhidayat1501/cbt-sekolah.git"
 )
 
 echo.
+echo [*] Menggunakan repository: %REPO_URL%
 echo [*] Menyiapkan repository lokal...
 
-:: 3. Initialize Git if not initialized
+:: 4. Initialize Git if not initialized
 if not exist ".git" (
     git init
     echo [OK] Git repository berhasil diinisialisasi.
 )
 
-:: 4. Add files
+:: 5. Add files & Commit
 echo [*] Menambahkan berkas ke Git (git add .)...
 git add .
 
-:: 5. Commit
 echo [*] Membuat commit...
-git commit -m "SADUCI CBT - Rebranded for SMP Negeri Satu Atap 2 Cipatujah"
+git commit -m "SADUCI CBT - SMP Negeri Satu Atap 2 Cipatujah" >nul 2>&1
+if %errorlevel% equ 0 (
+    echo [OK] Commit berhasil dibuat.
+) else (
+    echo [i] Tidak ada perubahan baru yang perlu di-commit.
+)
 
 :: 6. Set main branch & remote origin
-echo [*] Mengatur branch utama ke 'main'...
-git branch -M main
-
-git remote remove origin 2>nul
+git branch -M main >nul 2>&1
+git remote remove origin >nul 2>&1
 git remote add origin %REPO_URL%
 
-:: 7. Push
+:: 7. Push to GitHub
 echo.
 echo ======================================================================
 echo Mengunggah ke GitHub (%REPO_URL%)...
-echo Jika diminta login, silakan masukkan Personal Access Token atau login via browser.
+echo - Jika muncul jendela browser, silakan klik 'Sign in with your browser'.
+echo - Jika diminta password di terminal, gunakan Personal Access Token (PAT).
 echo ======================================================================
 echo.
 
+:: Try normal push first
 git push -u origin main
 
 if %errorlevel% equ 0 (
-    echo.
-    echo ======================================================================
-    echo [SUKSES] Source code SADUCI CBT berhasil di-upload ke GitHub!
-    echo.
-    echo Sekarang untuk install di VPS Anda, cukup jalankan di VPS (SSH):
-    echo.
-    echo    git clone %REPO_URL% /var/www/saduci_cbt
-    echo    cd /var/www/saduci_cbt
-    echo    sudo bash install-vps.sh -y
-    echo.
-    echo ======================================================================
-) else (
-    echo.
-    echo [WARNING] Terjadi kendala saat push ke GitHub.
-    echo Pastikan repository sudah dibuat di GitHub dan Anda memiliki hak akses.
+    goto :SUCCESS
 )
 
+echo.
+echo [!] Push normal ditolak (kemungkinan karena repository di GitHub sudah memiliki commit berbeda).
+echo Apakah Anda ingin menimpa (force push) repository di GitHub dengan versi lokal ini?
+set /p "FORCE_CHOICE=Timpa repository GitHub sekarang? (y/n) [y]: "
+if "%FORCE_CHOICE%"=="" set "FORCE_CHOICE=y"
+
+if /i "%FORCE_CHOICE%"=="y" (
+    echo [*] Menjalankan git push --force...
+    git push -u origin main --force
+    if !errorlevel! equ 0 goto :SUCCESS
+)
+
+echo.
+echo [WARNING] Terjadi kendala saat push ke GitHub.
+echo Kemungkinan penyebab:
+echo 1. Anda belum login atau token GitHub tidak memiliki izin 'repo'.
+echo 2. Password akun biasa ditolak oleh GitHub (harus gunakan Personal Access Token).
+echo.
+pause
+exit /b 1
+
+:SUCCESS
+echo.
+echo ======================================================================
+echo [SUKSES] Source code SADUCI CBT berhasil di-upload ke GitHub!
+echo.
+echo Sekarang untuk install di VPS Anda, cukup jalankan di VPS (SSH):
+echo.
+echo    git clone %REPO_URL% /var/www/saduci_cbt
+echo    cd /var/www/saduci_cbt
+echo    sudo bash install-vps.sh -y
+echo.
+echo ======================================================================
 echo.
 pause

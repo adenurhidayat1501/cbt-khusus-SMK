@@ -67,13 +67,8 @@ if [ ! -f "$SRC_DIR/index.php" ]; then
 fi
 
 # ------------------------------------------------------------------------------
-# 2. Configuration Setup
+# 2. Configuration Setup (Manual DB Guided Setup)
 # ------------------------------------------------------------------------------
-AUTO_ACCEPT=false
-if [[ "$1" == "-y" || "$1" == "--yes" ]]; then
-    AUTO_ACCEPT=true
-fi
-
 # Detect Server IP (instant via local network interface)
 SERVER_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
 if [ -z "$SERVER_IP" ]; then
@@ -87,38 +82,35 @@ else
     WEB_ROOT="/var/www/saduci_cbt"
 fi
 
-DB_NAME="saduci_cbt"
-DB_USER="saduci_cbt"
+DEFAULT_DB_NAME="saduci_cbt"
+DEFAULT_DB_USER="saduci_cbt"
+DEFAULT_DB_PASS="saduci123"
 
-# Generate random secure DB password instantly without blocking stdin
-RANDOM_PASS=$(openssl rand -hex 8 2>/dev/null || date +%s%N 2>/dev/null | sha256sum | head -c 16)
-if [ -z "$RANDOM_PASS" ]; then
-    RANDOM_PASS="SaduciPass$(date +%s)"
-fi
-DB_PASS="$RANDOM_PASS"
+echo -e "${YELLOW}${BOLD}======================================================================${NC}"
+echo -e "${YELLOW}${BOLD}           PANDUAN SETUP DATABASE SADUCI CBT                          ${NC}"
+echo -e "${YELLOW}${BOLD}======================================================================${NC}"
+echo -e "Silakan tentukan nama database dan kredensial yang Anda inginkan."
+echo -e "Tekan [ENTER] langsung jika ingin menggunakan nilai rekomendasi [ ]: \n"
 
-if [ "$AUTO_ACCEPT" = false ]; then
-    echo -e "${YELLOW}Silakan konfirmasi konfigurasi instalasi (Tekan ENTER untuk nilai default):${NC}"
-    read -p "Domain atau IP Server [$SERVER_IP]: " INPUT_DOMAIN
-    SERVER_DOMAIN=${INPUT_DOMAIN:-$SERVER_IP}
+read -p ">> Masukkan Nama Database [$DEFAULT_DB_NAME]: " INPUT_DB_NAME
+DB_NAME=${INPUT_DB_NAME:-$DEFAULT_DB_NAME}
 
-    read -p "Folder Web Root [$WEB_ROOT]: " INPUT_WEB_ROOT
-    WEB_ROOT=${INPUT_WEB_ROOT:-$WEB_ROOT}
+read -p ">> Masukkan User Database [$DEFAULT_DB_USER]: " INPUT_DB_USER
+DB_USER=${INPUT_DB_USER:-$DEFAULT_DB_USER}
 
-    read -p "Nama Database [$DB_NAME]: " INPUT_DB_NAME
-    DB_NAME=${INPUT_DB_NAME:-$DB_NAME}
+read -p ">> Masukkan Password Database [$DEFAULT_DB_PASS]: " INPUT_DB_PASS
+DB_PASS=${INPUT_DB_PASS:-$DEFAULT_DB_PASS}
 
-    read -p "User Database [$DB_USER]: " INPUT_DB_USER
-    DB_USER=${INPUT_DB_USER:-$DB_USER}
+read -p ">> Domain atau IP Server [$SERVER_IP]: " INPUT_DOMAIN
+SERVER_DOMAIN=${INPUT_DOMAIN:-$SERVER_IP}
 
-    read -p "Password Database [$DB_PASS]: " INPUT_DB_PASS
-    DB_PASS=${INPUT_DB_PASS:-$DB_PASS}
+read -p ">> Setup database lewat Web Browser Wizard (/install) nanti? (y/n) [n]: " INPUT_WEB_SETUP
+SETUP_VIA_WEB=${INPUT_WEB_SETUP:-n}
 
-    read -p "Pasang SSL Let's Encrypt? (y/n) [n]: " INPUT_SSL
+INSTALL_SSL="n"
+if [[ "$SERVER_DOMAIN" != "$SERVER_IP" && "$SERVER_DOMAIN" != "localhost" ]]; then
+    read -p ">> Pasang SSL Let's Encrypt? (y/n) [n]: " INPUT_SSL
     INSTALL_SSL=${INPUT_SSL:-n}
-else
-    SERVER_DOMAIN="$SERVER_IP"
-    INSTALL_SSL="n"
 fi
 
 echo -e "\n${GREEN}--> Menyiapkan instalasi dengan konfigurasi:${NC}"
@@ -127,6 +119,7 @@ echo -e "    Web Root Path   : ${CYAN}$WEB_ROOT${NC}"
 echo -e "    Database Name   : ${CYAN}$DB_NAME${NC}"
 echo -e "    Database User   : ${CYAN}$DB_USER${NC}"
 echo -e "    Database Pass   : ${CYAN}$DB_PASS${NC}"
+echo -e "    Setup via Web   : ${CYAN}$SETUP_VIA_WEB${NC}"
 echo ""
 
 # ------------------------------------------------------------------------------
@@ -134,7 +127,16 @@ echo ""
 # ------------------------------------------------------------------------------
 echo -e "${BLUE}[1/7] Memperbarui repositori paket Linux...${NC}"
 export DEBIAN_FRONTEND=noninteractive
-apt-get update -y
+
+# Proactively fix known broken/corrupted local mirrors (like cermin.rumahweb.id)
+if grep -rq "cermin.rumahweb.id" /etc/apt/ 2>/dev/null; then
+    echo -e "${YELLOW}[*] Mengalihkan mirror cermin.rumahweb.id ke archive.ubuntu.com...${NC}"
+    sed -i 's|cermin.rumahweb.id|archive.ubuntu.com|g' /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+    rm -rf /var/lib/apt/lists/*
+    apt-get clean
+fi
+apt-get update -y || true
+
 apt-get install -y software-properties-common curl wget git unzip lsb-release ca-certificates apt-transport-https
 
 # ------------------------------------------------------------------------------
@@ -150,11 +152,11 @@ PHP_INSTALLED=false
 # Try installing PHP PPA if Ubuntu
 if [ "$OS_NAME" = "ubuntu" ]; then
     add-apt-repository -y ppa:ondrej/php || true
-    apt-get update -y
+    apt-get update -y || true
 fi
 
 # Attempt to install PHP 7.4, fallback to PHP 8.1, fallback to default distro PHP
-if apt-get install -y php7.4 php7.4-cli php7.4-mysql php7.4-gd php7.4-mbstring php7.4-xml php7.4-curl php7.4-zip php7.4-json php7.4-intl libapache2-mod-php7.4; then
+if apt-get install -y php7.4 php7.4-cli php7.4-mysql php7.4-gd php7.4-mbstring php7.4-xml php7.4-curl php7.4-zip php7.4-intl libapache2-mod-php7.4; then
     PHP_VER="7.4"
     PHP_INSTALLED=true
 elif apt-get install -y php8.1 php8.1-cli php8.1-mysql php8.1-gd php8.1-mbstring php8.1-xml php8.1-curl php8.1-zip php8.1-intl libapache2-mod-php8.1; then
@@ -200,22 +202,32 @@ systemctl enable mariadb || systemctl enable mysql
 # Create Database and User
 mariadb -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 mariadb -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
+mariadb -e "ALTER USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
 mariadb -e "GRANT ALL PRIVILEGES ON \`$DB_NAME\`.* TO '$DB_USER'@'localhost';"
 mariadb -e "FLUSH PRIVILEGES;"
 
-# Import master.sql if available
-SQL_FILE="$SRC_DIR/assets/app/db/master.sql"
-if [ -f "$SQL_FILE" ]; then
-    echo -e "--> Mengimpor skema awal dari master.sql..."
-    mariadb "$DB_NAME" < "$SQL_FILE" || true
-    echo -e "${GREEN}--> Skema database berhasil diimpor!${NC}"
+# Import master.sql and initial schema if not web setup
+if [[ "$SETUP_VIA_WEB" =~ ^[Yy]$ ]]; then
+    echo -e "${YELLOW}--> Mode Web Installer dipilih. Pembuatan tabel akan dilakukan melalui browser di /install.${NC}"
 else
-    echo -e "${YELLOW}[!] File master.sql tidak ditemukan di $SQL_FILE, lewati impor.${NC}"
-fi
+    SQL_FILE="$SRC_DIR/assets/app/db/master.sql"
+    if [ -f "$SQL_FILE" ]; then
+        echo -e "--> Mengimpor skema awal dari master.sql ke database '$DB_NAME'..."
+        mariadb "$DB_NAME" < "$SQL_FILE" || true
+        echo -e "${GREEN}--> Skema database berhasil diimpor!${NC}"
+    else
+        echo -e "${YELLOW}[!] File master.sql tidak ditemukan di $SQL_FILE, lewati impor.${NC}"
+    fi
 
-# Ensure school setting is configured as SADUCI CBT & fix schema defaults
-mariadb "$DB_NAME" -e "INSERT INTO \`setting\` (\`id_setting\`, \`kode_sekolah\`, \`sekolah\`, \`nama_aplikasi\`, \`alamat\`, \`desa\`, \`kecamatan\`, \`kota\`, \`provinsi\`, \`logo_kanan\`, \`logo_kiri\`, \`versi\`) VALUES (1, 'SADUCI', 'SMP NEGERI SATU ATAP 2 CIPATUJAH', 'SADUCI CBT', 'Cipatujah', 'Cipatujah', 'Cipatujah', 'Kab. Tasikmalaya', 'Jawa Barat', 'assets/img/saduci_logo.png', 'assets/img/saduci_logo.png', '1.5.3') ON DUPLICATE KEY UPDATE \`nama_aplikasi\` = 'SADUCI CBT', \`sekolah\` = 'SMP NEGERI SATU ATAP 2 CIPATUJAH', \`kota\` = 'Kab. Tasikmalaya', \`logo_kanan\` = 'assets/img/saduci_logo.png', \`logo_kiri\` = 'assets/img/saduci_logo.png';" 2>/dev/null || true
-mariadb "$DB_NAME" -e "ALTER TABLE \`master_tp\` MODIFY \`active\` int(11) NOT NULL DEFAULT 0; ALTER TABLE \`master_kelas\` MODIFY \`jurusan_id\` int(11) NOT NULL DEFAULT 0;" 2>/dev/null || true
+    # Ensure school setting is configured as SADUCI CBT & fix schema defaults
+    mariadb "$DB_NAME" -e "INSERT INTO \`setting\` (\`id_setting\`, \`kode_sekolah\`, \`sekolah\`, \`nama_aplikasi\`, \`alamat\`, \`desa\`, \`kecamatan\`, \`kota\`, \`provinsi\`, \`logo_kanan\`, \`logo_kiri\`, \`versi\`) VALUES (1, 'SADUCI', 'SMP NEGERI SATU ATAP 2 CIPATUJAH', 'SADUCI CBT', 'Cipatujah', 'Cipatujah', 'Cipatujah', 'Kab. Tasikmalaya', 'Jawa Barat', 'assets/img/saduci_logo.png', 'assets/img/saduci_logo.png', '1.5.3') ON DUPLICATE KEY UPDATE \`nama_aplikasi\` = 'SADUCI CBT', \`sekolah\` = 'SMP NEGERI SATU ATAP 2 CIPATUJAH', \`kota\` = 'Kab. Tasikmalaya', \`logo_kanan\` = 'assets/img/saduci_logo.png', \`logo_kiri\` = 'assets/img/saduci_logo.png';" 2>/dev/null || true
+    mariadb "$DB_NAME" -e "ALTER TABLE \`master_tp\` MODIFY \`active\` int(11) NOT NULL DEFAULT 0; ALTER TABLE \`master_kelas\` MODIFY \`jurusan_id\` int(11) NOT NULL DEFAULT 0;" 2>/dev/null || true
+
+    # Ensure default admin user exists
+    ADMIN_HASH=$(php -r "echo password_hash('admin', PASSWORD_BCRYPT);" 2>/dev/null || echo '$2y$10$wO3t4hNl7m7r6T4G2fF3NuR9y7eM5uB2wE4pP8gL4uP8pL7vAeLq2')
+    mariadb "$DB_NAME" -e "INSERT INTO \`users\` (\`id\`, \`ip_address\`, \`username\`, \`password\`, \`email\`, \`created_on\`, \`active\`, \`first_name\`, \`last_name\`) VALUES (1, '127.0.0.1', 'admin', '$ADMIN_HASH', 'admin@saduci.sch.id', UNIX_TIMESTAMP(), 1, 'Administrator', 'SADUCI') ON DUPLICATE KEY UPDATE \`id\` = 1;" 2>/dev/null || true
+    mariadb "$DB_NAME" -e "INSERT INTO \`users_groups\` (\`id\`, \`user_id\`, \`group_id\`) VALUES (1, 1, 1) ON DUPLICATE KEY UPDATE \`group_id\` = 1;" 2>/dev/null || true
+fi
 
 # ------------------------------------------------------------------------------
 # 6. Deploy Files to Web Root & Configure Permissions
@@ -243,24 +255,30 @@ if [ -f "$DB_CONFIG_FILE" ]; then
     sed -i "s/'hostname' => getenv('DB_HOST') ? getenv('DB_HOST') : '.*'/'hostname' => getenv('DB_HOST') ? getenv('DB_HOST') : 'localhost'/" "$DB_CONFIG_FILE"
     sed -i "s/'username' => getenv('DB_USER') ? getenv('DB_USER') : '.*'/'username' => getenv('DB_USER') ? getenv('DB_USER') : '$DB_USER'/" "$DB_CONFIG_FILE"
     sed -i "s/'password' => getenv('DB_PASS') ? getenv('DB_PASS') : '.*'/'password' => getenv('DB_PASS') ? getenv('DB_PASS') : '$DB_PASS'/" "$DB_CONFIG_FILE"
-    sed -i "s/'database' => getenv('DB_NAME') ? getenv('DB_NAME') : '.*'/'database' => getenv('DB_NAME') ? getenv('DB_NAME') : '$DB_NAME'/" "$DB_CONFIG_FILE"
+    if [[ "$SETUP_VIA_WEB" =~ ^[Yy]$ ]]; then
+        sed -i "s/'database' => getenv('DB_NAME') ? getenv('DB_NAME') : '.*'/'database' => getenv('DB_NAME') ? getenv('DB_NAME') : ''/" "$DB_CONFIG_FILE"
+    else
+        sed -i "s/'database' => getenv('DB_NAME') ? getenv('DB_NAME') : '.*'/'database' => getenv('DB_NAME') ? getenv('DB_NAME') : '$DB_NAME'/" "$DB_CONFIG_FILE"
+    fi
 fi
 
-# Set proper ownership & permissions
+# Set proper ownership & permissions (fast batch mode with +)
 chown -R www-data:www-data "$WEB_ROOT"
-find "$WEB_ROOT" -type d -exec chmod 755 {} \;
-find "$WEB_ROOT" -type f -exec chmod 644 {} \;
-chmod -R 775 "$WEB_ROOT/uploads"
-chmod -R 775 "$WEB_ROOT/backups"
-chmod -R 775 "$WEB_ROOT/application/logs"
-chmod -R 775 "$WEB_ROOT/application/cache"
+find "$WEB_ROOT" -type d -exec chmod 755 {} +
+find "$WEB_ROOT" -type f -exec chmod 644 {} +
+chmod -R 775 "$WEB_ROOT/uploads" "$WEB_ROOT/backups" "$WEB_ROOT/application/logs" "$WEB_ROOT/application/cache" 2>/dev/null || true
 
-# Install composer dependencies if composer.json exists
+# Install composer dependencies if composer.json exists and vendor not yet populated
 if [ -f "$WEB_ROOT/composer.json" ]; then
-    echo -e "--> Menjalankan composer install untuk library Excel & PDF..."
-    cd "$WEB_ROOT"
-    COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-interaction || true
-    chown -R www-data:www-data "$WEB_ROOT/vendor" 2>/dev/null || true
+    if [ ! -f "$WEB_ROOT/vendor/autoload.php" ]; then
+        echo -e "${BLUE}[*] Mengunduh library Excel & PDF via Composer (proses ini membutuhkan waktu 1-3 menit, mohon tunggu)...${NC}"
+        cd "$WEB_ROOT"
+        COMPOSER_ALLOW_SUPERUSER=1 composer install --ignore-platform-reqs --no-dev --optimize-autoloader --no-interaction 2>/dev/null || \
+        COMPOSER_ALLOW_SUPERUSER=1 composer update --ignore-platform-reqs --no-dev --optimize-autoloader --no-interaction || true
+        chown -R www-data:www-data "$WEB_ROOT/vendor" 2>/dev/null || true
+    else
+        echo -e "${GREEN}--> Library vendor (Excel & PDF) sudah terpasang, melewati unduhan.${NC}"
+    fi
 fi
 
 # ------------------------------------------------------------------------------
@@ -318,15 +336,25 @@ echo -e "${GREEN}${BOLD}        INSTALASI SADUCI CBT BERHASIL DISELESAIKAN!     
 echo -e "${GREEN}${BOLD}             SMP NEGERI SATU ATAP 2 CIPATUJAH                         ${NC}"
 echo -e "${GREEN}${BOLD}======================================================================${NC}"
 echo ""
-echo -e "  Akses Aplikasi   : ${CYAN}http://$SERVER_DOMAIN/${NC}"
+echo -e "  Akses Server     : ${CYAN}http://$SERVER_DOMAIN/${NC}"
 echo -e "  Lokasi Web Root  : ${YELLOW}$WEB_ROOT${NC}"
+echo -e "  Host Database    : ${CYAN}localhost${NC}"
 echo -e "  Database Name    : ${YELLOW}$DB_NAME${NC}"
 echo -e "  Database User    : ${YELLOW}$DB_USER${NC}"
 echo -e "  Database Pass    : ${YELLOW}$DB_PASS${NC}"
 echo ""
-echo -e "  ${BOLD}Akun Login Default (Admin):${NC}"
-echo -e "  Username         : ${CYAN}admin${NC}"
-echo -e "  Password         : ${CYAN}admin${NC}"
+
+if [[ "$SETUP_VIA_WEB" =~ ^[Yy]$ ]]; then
+    echo -e "  ${BOLD}${YELLOW}[!] MODE WEB WIZARD AKTIF:${NC}"
+    echo -e "  Silakan buka: ${CYAN}http://$SERVER_DOMAIN/install${NC} di browser Anda."
+    echo -e "  Gunakan Database Name: ${YELLOW}$DB_NAME${NC}, User: ${YELLOW}$DB_USER${NC}, Pass: ${YELLOW}$DB_PASS${NC}"
+else
+    echo -e "  ${BOLD}Akun Login Default (Admin):${NC}"
+    echo -e "  Username         : ${CYAN}admin${NC}"
+    echo -e "  Password         : ${CYAN}admin${NC}"
+    echo -e "  Akses Langsung   : ${CYAN}http://$SERVER_DOMAIN/${NC}"
+fi
+
 echo ""
 echo -e "  ${BOLD}Perintah Berguna:${NC}"
 echo -e "  Restart Apache   : ${CYAN}sudo systemctl restart apache2${NC}"

@@ -1,9 +1,11 @@
 <?php
+if (!defined('BASEPATH')) define('BASEPATH', TRUE);
 $db_config_path = '../application/config/database.php';
 if (file_exists($db_config_path)) {
     include($db_config_path);
     if (isset($db['default']['database']) && !empty($db['default']['database'])) {
-        die("<h3>Installer Terkunci</h3><p>Aplikasi SADUCI CBT sudah terkonfigurasi pada server ini. Silakan hapus folder <code>installer</code> untuk alasan keamanan.</p>");
+        header("Location: ../");
+        exit("<script>window.location.href='../';</script><h3>Installer Terkunci</h3><p>Aplikasi SADUCI CBT sudah terkonfigurasi pada server ini.</p><p><a href='../' style='padding: 8px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 4px;'>Masuk ke Halaman Login CBT</a></p>");
     }
 }
 
