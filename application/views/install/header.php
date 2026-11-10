@@ -9,9 +9,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Garuda CBT Installer</title>
+    <title>SADUCI CBT Installer</title>
 
-    <link rel="shortcut icon" href="<?= base_url('assets/img/favicon.png') ?>" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= base_url('assets/img/saduci_logo.png') ?>" type="image/x-icon">
 
     <!-- Custom fonts for this template-->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/app/css/multi-step.css">

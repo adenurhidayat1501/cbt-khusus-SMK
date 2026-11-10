@@ -3,7 +3,7 @@
 
 <!-- Main Footer -->
 <footer class="main-footer">
-    <strong>GarudaCBT</strong> v.<?= APP_VERSION ?>
+    <strong>SADUCI CBT</strong> v.<?= APP_VERSION ?> - SMP Negeri Satu Atap 2 Cipatujah
     <div class="float-right d-none d-sm-inline-block">
         <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
         <b>Version</b> 3.0.5

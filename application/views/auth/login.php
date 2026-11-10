@@ -1,5 +1,7 @@
 <?php
-$logo_app = $setting->logo_kanan == null ? base_url() . 'assets/img/favicon.png' : base_url() . $setting->logo_kanan;
+$logo_app = (isset($setting->logo_kanan) && !empty($setting->logo_kanan)) ? base_url() . $setting->logo_kanan : base_url('assets/img/saduci_logo.png');
+$app_title = (!empty($setting->nama_aplikasi)) ? $setting->nama_aplikasi : 'SADUCI CBT';
+$school_subtitle = (!empty($setting->sekolah)) ? $setting->sekolah : 'SMP NEGERI SATU ATAP 2 CIPATUJAH';
 ?>
 <div class="modern-login-wrapper">
     <div class="modern-login-card">
@@ -8,8 +10,8 @@ $logo_app = $setting->logo_kanan == null ? base_url() . 'assets/img/favicon.png'
             <div class="modern-login-logo">
                 <img src="<?= $logo_app ?>" alt="Logo">
             </div>
-            <h4 class="modern-login-title"><?= $setting->nama_aplikasi ?></h4>
-            <p class="modern-login-subtitle mb-0"><?= $setting->alamat ?></p>
+            <h4 class="modern-login-title"><?= $app_title ?></h4>
+            <p class="modern-login-subtitle mb-0"><?= $school_subtitle ?></p>
         </div>
 
         <!-- Feedback & Error Message -->
@@ -87,6 +89,7 @@ $logo_app = $setting->logo_kanan == null ? base_url() . 'assets/img/favicon.png'
             const cbtOnly = arrForm.find(function (obj) {
                 return obj.name === 'cbt-only'
             })
+            localStorage.setItem('saduciCBT.login', cbtOnly !== undefined ? '1' : '0')
             localStorage.setItem('garudaCBT.login', cbtOnly !== undefined ? '1' : '0')
 
             $.ajax({
@@ -100,7 +103,7 @@ $logo_app = $setting->logo_kanan == null ? base_url() . 'assets/img/favicon.png'
                     if(data.status){
                         infobox.html('<div class="alert alert-success py-2 px-3 text-center mb-3"><i class="fas fa-check-circle mr-2"></i>Login berhasil! Mengalihkan...</div>');
 
-                        const isLogin = localStorage.getItem('garudaCBT.login')
+                        const isLogin = localStorage.getItem('saduciCBT.login') || localStorage.getItem('garudaCBT.login')
                         const isCbtMode = isLogin ? isLogin === '1' : false
                         let go = base_url + data.url;
                         if (isCbtMode && data.role === 'siswa') {

@@ -14,10 +14,10 @@
             <div class="row align-items-center">
                 <div class="col-sm-6 col-12 mb-2 mb-sm-0">
                     <div class="exam-brand-badge">
-                        <img src="<?= base_url() ?>assets/img/garuda_circle.png" width="48" height="48" alt="Garuda CBT">
+                        <img src="<?= base_url() ?>assets/img/saduci_logo.png" width="48" height="48" alt="SADUCI CBT">
                         <div>
-                            <h4 class="text-white mb-0 font-weight-bold" style="letter-spacing: -0.02em;">GarudaCBT</h4>
-                            <small class="text-white-50 text-uppercase font-weight-bold" style="letter-spacing: 0.08em; font-size: 11px;">Computer Based Test</small>
+                            <h4 class="text-white mb-0 font-weight-bold" style="letter-spacing: -0.02em;">SADUCI CBT</h4>
+                            <small class="text-white-50 text-uppercase font-weight-bold" style="letter-spacing: 0.08em; font-size: 11px;">SMPN SATU ATAP 2 CIPATUJAH</small>
                         </div>
                     </div>
                 </div>

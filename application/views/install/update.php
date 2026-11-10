@@ -19,9 +19,9 @@
     */
     ?>
     <div class="container">
-        <div class="align-content-center">
-            <img class="mt-3 mb-3" width="30" height="30" src="<?= base_url('assets/img/garuda_circle.png') ?>">
-            <span class="text-lg"><b>arudaCBT</b></span>
+        <div class="align-content-center d-flex align-items-center">
+            <img class="mt-3 mb-3 mr-2" width="36" height="36" src="<?= base_url('assets/img/saduci_logo.png') ?>" alt="SADUCI Logo">
+            <span class="text-lg font-weight-bold">SADUCI CBT</span>
         </div>
         <hr>
         <div class="row mb-3">

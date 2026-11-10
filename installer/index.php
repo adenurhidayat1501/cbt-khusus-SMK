@@ -3,7 +3,7 @@ $db_config_path = '../application/config/database.php';
 if (file_exists($db_config_path)) {
     include($db_config_path);
     if (isset($db['default']['database']) && !empty($db['default']['database'])) {
-        die("<h3>Installer Terkunci</h3><p>Aplikasi Garuda CBT sudah terkonfigurasi pada server ini. Silakan hapus folder <code>installer</code> untuk alasan keamanan.</p>");
+        die("<h3>Installer Terkunci</h3><p>Aplikasi SADUCI CBT sudah terkonfigurasi pada server ini. Silakan hapus folder <code>installer</code> untuk alasan keamanan.</p>");
     }
 }
 
@@ -19,10 +19,10 @@ $base_url = str_replace('installer/', '', $base_url);
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="SADUCI CBT - SMP NEGERI SATU ATAP 2 CIPATUJAH">
+    <meta name="author" content="SMP NEGERI SATU ATAP 2 CIPATUJAH">
 
-    <title>Garuda CBT Installer</title>
+    <title>SADUCI CBT Installer</title>
 
     <link rel="shortcut icon" href="<?= $base_url ?>assets/img/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="<?= $base_url ?>assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
@@ -32,22 +32,23 @@ $base_url = str_replace('installer/', '', $base_url);
 
     <style>
         .gradient {
-            background: linear-gradient(90deg, #6A21EA 0%, #F524EF 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 50%, #0d9488 100%);
         }
     </style>
 <body id="page-top">
-<section class="d-flex align-items-center gradient">
+<section class="d-flex align-items-center gradient min-vh-100">
     <div class="container p-4">
         <div class="row">
             <div class="col-lg-6 d-lg-flex flex-lg-column justify-content-center align-items-stretch pt-5 pt-lg-0 aos-init aos-animate" data-aos="fade-up">
                 <div class="text-center text-md-left">
-                    <div class="mb-3 text-white">
-                        <img style="width:100px; height:auto;" src="<?= $base_url ?>assets/img/garuda_white.svg"><span class="h1 align-bottom">aruda</span>
-                        <span class="h1 align-bottom"> CBT</span>
+                    <div class="mb-3 text-white d-flex align-items-center justify-content-center justify-content-md-start">
+                        <img style="width:75px; height:auto; margin-right: 15px;" src="<?= $base_url ?>assets/img/saduci_logo.png" alt="SADUCI Logo">
+                        <span class="h1 align-bottom font-weight-bold mb-0">SADUCI CBT</span>
                     </div>
-                    <div class="h2 text-white">
-                        <b>G</b>abungan <b>A</b>plikasi <b>R</b>apor,<br><b>U</b>jian dan e-learning
+                    <div class="h3 text-white font-weight-light">
+                        SMP NEGERI SATU ATAP 2 CIPATUJAH
                     </div>
+                    <p class="text-white-50">Kab. Tasikmalaya - Sistem Computer Based Test & E-Learning</p>
                 </div>
             </div>
             <div class="col-lg-6 d-lg-flex flex-lg-column align-items-stretch hero-img aos-init aos-animate pt-5" data-aos="fade-up">

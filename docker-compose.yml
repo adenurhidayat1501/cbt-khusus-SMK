@@ -3,15 +3,15 @@ version: '3.8'
 services:
   app:
     build: .
-    container_name: garuda_cbt_app
+    container_name: saduci_cbt_app
     restart: always
     ports:
       - "80:80"
     environment:
       - DB_HOST=db
-      - DB_NAME=garudacbt
-      - DB_USER=garudacbt
-      - DB_PASS=garudapassword123
+      - DB_NAME=saduci_cbt
+      - DB_USER=saduci_cbt
+      - DB_PASS=saducipassword123
     depends_on:
       - db
     volumes:
@@ -21,13 +21,13 @@ services:
 
   db:
     image: mariadb:10.6
-    container_name: garuda_cbt_db
+    container_name: saduci_cbt_db
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=rootpassword123
-      - MYSQL_DATABASE=garudacbt
-      - MYSQL_USER=garudacbt
-      - MYSQL_PASSWORD=garudapassword123
+      - MYSQL_DATABASE=saduci_cbt
+      - MYSQL_USER=saduci_cbt
+      - MYSQL_PASSWORD=saducipassword123
     volumes:
       - db_data:/var/lib/mysql
       - ./assets/app/db/master.sql:/docker-entrypoint-initdb.d/master.sql:ro

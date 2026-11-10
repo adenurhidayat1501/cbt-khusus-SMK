@@ -4,13 +4,15 @@
             <div class="col-lg-4 d-lg-flex flex-lg-column justify-content-center align-items-stretch pt-5 pt-lg-0 aos-init aos-animate"
                  data-aos="fade-up">
                 <div class="text-center text-lg-left">
-                    <div class="mb-3 text-white">
-                        <img style="width:100px; height:auto;" src="<?= base_url() ?>/assets/img/garuda_white.svg"><span
-                                class="h1 align-bottom">aruda</span>
-                        <span class="h1 align-bottom"> CBT</span>
+                    <div class="mb-3 text-white d-flex align-items-center">
+                        <img style="width:70px; height:auto;" src="<?= base_url() ?>assets/img/saduci_logo.png" alt="SADUCI Logo">
+                        <span class="h1 align-bottom font-weight-bold ml-3 mb-0">SADUCI CBT</span>
                     </div>
-                    <div class="h2 text-white">
-                        <b>G</b>abungan <b>A</b>plikasi <b>R</b>apor,<br/><b>U</b>jian dan e-learning
+                    <div class="h3 text-white font-weight-bold">
+                        SMP NEGERI SATU ATAP 2 CIPATUJAH
+                    </div>
+                    <div class="text-white-50">
+                        Sistem Penilaian & Ujian Berbasis Komputer
                     </div>
                 </div>
             </div>

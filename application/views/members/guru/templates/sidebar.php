@@ -2,10 +2,13 @@
 <aside class="main-sidebar sidebar-light-teal my-shadow">
     <!-- Brand Logo -->
     <a href="<?= base_url(); ?>" class="brand-link bg-white">
-        <?php $logo_app = $setting->logo_kiri == null ? base_url() . 'assets/img/favicon.png' : base_url() . $setting->logo_kiri; ?>
-        <img src="<?= $logo_app ?>" alt="App Logo" class="brand-image"
-             style="opacity: .8">
-        <span class="brand-text text-sm"><?= $setting->nama_aplikasi ?></span>
+        <?php 
+        $logo_app = (isset($setting->logo_kiri) && !empty($setting->logo_kiri)) ? base_url() . $setting->logo_kiri : base_url('assets/img/saduci_logo.png'); 
+        $brand_title = !empty($setting->nama_aplikasi) ? $setting->nama_aplikasi : 'SADUCI CBT';
+        ?>
+        <img src="<?= $logo_app ?>" alt="App Logo" class="brand-image img-circle elevation-2"
+             style="opacity: .9">
+        <span class="brand-text font-weight-bold ml-1"><?= $brand_title ?></span>
     </a>
 
     <!-- Sidebar -->
@@ -123,7 +126,7 @@
         {'name': 'LOGOUT', 'link': '', 'icon': 'fas fa-sign-out-alt', 'cbt': '1'},
     ];
 
-    const isLogin = localStorage.getItem('garudaCBT.login')
+    const isLogin = localStorage.getItem('saduciCBT.login') || localStorage.getItem('garudaCBT.login')
     const isCbtMode = isLogin ? isLogin === '1' : false
     let htmlMenu = '';
     menus.forEach(function (header) {

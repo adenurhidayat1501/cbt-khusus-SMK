@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-title Garuda CBT - Push to GitHub Helper
+title SADUCI CBT - Push to GitHub Helper
 
 cd /d "%~dp0"
 if exist "main\index.php" (
@@ -8,7 +8,8 @@ if exist "main\index.php" (
 )
 
 echo ======================================================================
-echo          GARUDA CBT - PUSH TO GITHUB AUTOMATION HELPER                
+echo          SADUCI CBT - PUSH TO GITHUB AUTOMATION HELPER                
+echo              SMP NEGERI SATU ATAP 2 CIPATUJAH                         
 echo ======================================================================
 echo.
 
@@ -45,7 +46,7 @@ echo.
 
 :: 2. Prompt for GitHub Repository URL
 set "REPO_URL="
-set /p "REPO_URL=Masukkan URL Repository GitHub Anda (contoh: https://github.com/username/garudacbt.git): "
+set /p "REPO_URL=Masukkan URL Repository GitHub Anda (contoh: https://github.com/adenurhidayat1501/cbt-sekolah.git): "
 
 if "%REPO_URL%"=="" (
     echo [ERROR] URL repository tidak boleh kosong!
@@ -68,7 +69,7 @@ git add .
 
 :: 5. Commit
 echo [*] Membuat commit...
-git commit -m "Garuda CBT - Modern UI/UX and Automated VPS Deployment"
+git commit -m "SADUCI CBT - Rebranded for SMP Negeri Satu Atap 2 Cipatujah"
 
 :: 6. Set main branch & remote origin
 echo [*] Mengatur branch utama ke 'main'...
@@ -90,13 +91,13 @@ git push -u origin main
 if %errorlevel% equ 0 (
     echo.
     echo ======================================================================
-    echo [SUKSES] Source code Garuda CBT berhasil di-upload ke GitHub!
+    echo [SUKSES] Source code SADUCI CBT berhasil di-upload ke GitHub!
     echo.
     echo Sekarang untuk install di VPS Anda, cukup jalankan di VPS (SSH):
     echo.
-    echo    git clone %REPO_URL% /var/www/garudacbt
-    echo    cd /var/www/garudacbt
-    echo    sudo bash install-vps.sh
+    echo    git clone %REPO_URL% /var/www/saduci_cbt
+    echo    cd /var/www/saduci_cbt
+    echo    sudo bash install-vps.sh -y
     echo.
     echo ======================================================================
 ) else (

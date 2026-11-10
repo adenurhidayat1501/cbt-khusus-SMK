@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Login</title>
+    <title><?= (!empty($setting->nama_aplikasi) ? $setting->nama_aplikasi : 'SADUCI CBT') . ' - Login' ?></title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
-    <?php $logo_app = $setting->logo_kiri == null ? base_url() . 'assets/img/favicon.png' : base_url() . $setting->logo_kiri; ?>
-    <link rel="shortcut icon" href="<?= $logo_app ?>" type="image/x-icon">
+    <?php $logo_app = (isset($setting->logo_kiri) && !empty($setting->logo_kiri)) ? base_url() . $setting->logo_kiri : base_url('assets/img/saduci_logo.png'); ?>
+    <link rel="shortcut icon" href="<?= $logo_app ?>" type="image/png">
 
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/Ionicons/css/ionicons.min.css">

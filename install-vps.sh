@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Garuda CBT - Automated VPS Installer Script (Ubuntu / Debian)
+# SADUCI CBT - Automated VPS Installer Script (Ubuntu / Debian)
+# SMP NEGERI SATU ATAP 2 CIPATUJAH
 # Modernized Edition (2024-2026)
 # ==============================================================================
 # Usage:
@@ -30,7 +31,8 @@ fi
 
 echo -e "${CYAN}${BOLD}"
 echo "======================================================================"
-echo "          GARUDA CBT - AUTOMATED VPS INSTALLER SCRIPT                 "
+echo "          SADUCI CBT - AUTOMATED VPS INSTALLER SCRIPT                 "
+echo "              SMP NEGERI SATU ATAP 2 CIPATUJAH                        "
 echo "                 Modernized Edition (2024-2026)                       "
 echo "======================================================================"
 echo -e "${NC}"
@@ -78,14 +80,20 @@ if [ -z "$SERVER_IP" ]; then
     SERVER_IP=$(curl -s -m 2 https://api.ipify.org 2>/dev/null || echo "127.0.0.1")
 fi
 
-WEB_ROOT="/var/www/garudacbt"
-DB_NAME="garudacbt"
-DB_USER="garudacbt"
+# Set default web root based on source dir
+if [ "$SRC_DIR" = "/var/www/garudacbt" ]; then
+    WEB_ROOT="/var/www/garudacbt"
+else
+    WEB_ROOT="/var/www/saduci_cbt"
+fi
+
+DB_NAME="saduci_cbt"
+DB_USER="saduci_cbt"
 
 # Generate random secure DB password instantly without blocking stdin
 RANDOM_PASS=$(openssl rand -hex 8 2>/dev/null || date +%s%N 2>/dev/null | sha256sum | head -c 16)
 if [ -z "$RANDOM_PASS" ]; then
-    RANDOM_PASS="GarudaPass$(date +%s)"
+    RANDOM_PASS="SaduciPass$(date +%s)"
 fi
 DB_PASS="$RANDOM_PASS"
 
@@ -205,6 +213,9 @@ else
     echo -e "${YELLOW}[!] File master.sql tidak ditemukan di $SQL_FILE, lewati impor.${NC}"
 fi
 
+# Ensure school setting is configured as SADUCI CBT
+mariadb "$DB_NAME" -e "INSERT INTO \`setting\` (\`id_setting\`, \`kode_sekolah\`, \`sekolah\`, \`nama_aplikasi\`, \`alamat\`, \`desa\`, \`kecamatan\`, \`kota\`, \`provinsi\`, \`logo_kanan\`, \`logo_kiri\`, \`versi\`) VALUES (1, 'SADUCI', 'SMP NEGERI SATU ATAP 2 CIPATUJAH', 'SADUCI CBT', 'Cipatujah', 'Cipatujah', 'Cipatujah', 'Kab. Tasikmalaya', 'Jawa Barat', 'assets/img/saduci_logo.png', 'assets/img/saduci_logo.png', '1.5.3') ON DUPLICATE KEY UPDATE \`nama_aplikasi\` = 'SADUCI CBT', \`sekolah\` = 'SMP NEGERI SATU ATAP 2 CIPATUJAH', \`kota\` = 'Kab. Tasikmalaya', \`logo_kanan\` = 'assets/img/saduci_logo.png', \`logo_kiri\` = 'assets/img/saduci_logo.png';" 2>/dev/null || true
+
 # ------------------------------------------------------------------------------
 # 6. Deploy Files to Web Root & Configure Permissions
 # ------------------------------------------------------------------------------
@@ -257,7 +268,7 @@ fi
 echo -e "${BLUE}[6/7] Mengonfigurasi Apache VirtualHost...${NC}"
 a2enmod rewrite headers expires ssl 2>/dev/null || true
 
-VHOST_FILE="/etc/apache2/sites-available/garudacbt.conf"
+VHOST_FILE="/etc/apache2/sites-available/saduci_cbt.conf"
 cat <<EOF > "$VHOST_FILE"
 <VirtualHost *:80>
     ServerName $SERVER_DOMAIN
@@ -269,14 +280,14 @@ cat <<EOF > "$VHOST_FILE"
         Require all granted
     </Directory>
 
-    ErrorLog \${APACHE_LOG_DIR}/garudacbt_error.log
-    CustomLog \${APACHE_LOG_DIR}/garudacbt_access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/saduci_cbt_error.log
+    CustomLog \${APACHE_LOG_DIR}/saduci_cbt_access.log combined
 </VirtualHost>
 EOF
 
-# Enable site & disable default 000-default
-a2dissite 000-default.conf 2>/dev/null || true
-a2ensite garudacbt.conf
+# Enable site & disable default 000-default and legacy garudacbt
+a2dissite 000-default.conf garudacbt.conf 2>/dev/null || true
+a2ensite saduci_cbt.conf
 
 # Restart Apache
 systemctl restart apache2
@@ -302,7 +313,8 @@ fi
 # 9. Installation Complete Summary
 # ------------------------------------------------------------------------------
 echo -e "\n${GREEN}${BOLD}======================================================================${NC}"
-echo -e "${GREEN}${BOLD}        INSTALASI GARUDA CBT BERHASIL DISELESAIKAN!                   ${NC}"
+echo -e "${GREEN}${BOLD}        INSTALASI SADUCI CBT BERHASIL DISELESAIKAN!                   ${NC}"
+echo -e "${GREEN}${BOLD}             SMP NEGERI SATU ATAP 2 CIPATUJAH                         ${NC}"
 echo -e "${GREEN}${BOLD}======================================================================${NC}"
 echo ""
 echo -e "  Akses Aplikasi   : ${CYAN}http://$SERVER_DOMAIN/${NC}"
@@ -318,6 +330,6 @@ echo ""
 echo -e "  ${BOLD}Perintah Berguna:${NC}"
 echo -e "  Restart Apache   : ${CYAN}sudo systemctl restart apache2${NC}"
 echo -e "  Restart Database : ${CYAN}sudo systemctl restart mariadb${NC}"
-echo -e "  Cek Log Error    : ${CYAN}sudo tail -f /var/log/apache2/garudacbt_error.log${NC}"
+echo -e "  Cek Log Error    : ${CYAN}sudo tail -f /var/log/apache2/saduci_cbt_error.log${NC}"
 echo -e "${GREEN}======================================================================${NC}\n"
 

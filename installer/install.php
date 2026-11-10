@@ -5,7 +5,7 @@ $db_config_path = '../application/config/database.php';
 if (file_exists($db_config_path)) {
     include($db_config_path);
     if (isset($db['default']['database']) && !empty($db['default']['database'])) {
-        die("ERROR: Installer terkunci. Aplikasi Garuda CBT sudah terkonfigurasi. Hapus folder 'installer' dari server untuk alasan keamanan.");
+        die("ERROR: Installer terkunci. Aplikasi SADUCI CBT sudah terkonfigurasi. Hapus folder 'installer' dari server untuk alasan keamanan.");
     }
 }
 
