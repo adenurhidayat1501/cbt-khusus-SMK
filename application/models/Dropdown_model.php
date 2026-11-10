@@ -102,7 +102,7 @@ class Dropdown_model extends CI_Model {
         $this->db->where('kategori <> "WAJIB"')
             ->where('kategori <> "PAI (Kemenag)"')
             ->where('kategori <> "MULOK"');
-        $res = $this->db->get('master_mapel')->result();
+        $res = $this->db->get()->result();
         $ress = [];
         if ($res) {
             foreach ($res as $key => $row) {
@@ -130,7 +130,7 @@ class Dropdown_model extends CI_Model {
         $this->db->where('kategori <> "PAI (Kemenag)"');
         $this->db->where('kategori <> "MULOK"');
 
-        $res = $this->db->get('master_mapel')->result();
+        $res = $this->db->get()->result();
         $ress = [];
         if ($res) {
             foreach ($res as $key => $row) {

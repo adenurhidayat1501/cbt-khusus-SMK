@@ -59,48 +59,6 @@ switch (ENVIRONMENT) {
         echo 'The application environment is not set correctly.';
         exit(1); // EXIT_ERROR
 }
-
-// Auto-check if database is initialized; redirect to installer if unconfigured on localhost
-if (is_dir(__DIR__ . '/installer') && (!isset($_SERVER['REQUEST_URI']) || strpos($_SERVER['REQUEST_URI'], 'installer') === false)) {
-    $db_cfg = __DIR__ . '/application/config/database.php';
-    if (file_exists($db_cfg)) {
-        @include($db_cfg);
-        if (isset($db['default'])) {
-            $h = $db['default']['hostname'];
-            $u = $db['default']['username'];
-            $p = $db['default']['password'];
-            $d = $db['default']['database'];
-            
-            if (empty($d)) {
-                $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-                header("Location: " . ($base ? $base : '') . "/installer/");
-                exit;
-            } else {
-                $m = @new mysqli($h, $u, $p, $d);
-                if ($m->connect_errno) {
-                    // Check if MySQL server is running so we can redirect to web wizard
-                    $m2 = @new mysqli($h, $u, $p, '');
-                    if (!$m2->connect_errno) {
-                        $m2->close();
-                        $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-                        header("Location: " . ($base ? $base : '') . "/installer/");
-                        exit;
-                    }
-                } else {
-                    $chk = $m->query("SHOW TABLES LIKE 'users'");
-                    if (!$chk || $chk->num_rows == 0) {
-                        $m->close();
-                        $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-                        header("Location: " . ($base ? $base : '') . "/installer/");
-                        exit;
-                    }
-                    if ($chk) $chk->close();
-                    $m->close();
-                }
-            }
-        }
-    }
-}
 $system_path = 'system';
 $application_folder = 'application';
 $view_folder = '';
@@ -190,11 +148,15 @@ if (!isset($view_folder[0]) && is_dir(APPPATH . 'views' . DIRECTORY_SEPARATOR)) 
 }
 
 define('VIEWPATH', $view_folder . DIRECTORY_SEPARATOR);
-//require_once BASEPATH . 'core/CodeIgniter.php';
 
 $db = [];
 include 'application/config/database.php';
 $database = isset($db['default']['database']) ? $db['default']['database'] : '';
+
+if (function_exists('mysqli_report')) {
+    @mysqli_report(MYSQLI_REPORT_OFF);
+}
+
 if (empty($database)) {
     if (is_dir('installer')) {
         header("Location: installer");
@@ -204,19 +166,28 @@ if (empty($database)) {
     }
 } else {
     $data = isset($db['default']) ? $db['default'] : [];
-    $mysqli = @new mysqli($data['hostname'], $data['username'], $data['password'], $data['database']);
-    if ($mysqli->connect_errno) {
-        if (!is_dir('installer')) {
-            die("<h3>Gagal Terhubung ke Database MySQL/MariaDB</h3>"
-                . "<p><b>Error:</b> " . htmlspecialchars($mysqli->connect_error) . "</p>"
-                . "<p>Pastikan user dan password database di <code>application/config/database.php</code> sudah sesuai dengan MariaDB di VPS.</p>");
-        } else {
-            $mysqli->close();
-            header("Location: installer");
-            exit;
+    $connected = false;
+    $has_tables = false;
+
+    try {
+        $mysqli = @new mysqli($data['hostname'], $data['username'], $data['password'], $data['database']);
+        if (!$mysqli->connect_errno) {
+            $connected = true;
+            $chk = @$mysqli->query("SHOW TABLES LIKE 'users'");
+            if ($chk && $chk->num_rows > 0) {
+                $has_tables = true;
+            }
+            if ($chk) @$chk->close();
+            @$mysqli->close();
         }
-    } else {
-        $mysqli->close();
-        require_once BASEPATH . 'core/CodeIgniter.php';
+    } catch (Throwable $e) {
+        $connected = false;
     }
+
+    if ((!$connected || !$has_tables) && is_dir('installer')) {
+        header("Location: installer");
+        exit;
+    }
+
+    require_once BASEPATH . 'core/CodeIgniter.php';
 }

@@ -28,6 +28,11 @@ class Guruview extends CI_Controller {
         $guru = $this->dashboard->getDetailGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
         if ($user == null) {
             redirect('auth');
+            return;
+        }
+        if ($guru == null) {
+            redirect('dashboard');
+            return;
         }
 
 		$data = [

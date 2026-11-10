@@ -11,12 +11,22 @@ class Compare extends CI_Controller{
             redirect('auth');
         }
         $this->CHARACTER_SET = "utf8 COLLATE utf8_general_ci";
-        $this->DB1 = $this->load->database('main_garuda', TRUE); // load the source/development database
-        $this->DB2 = $this->load->database('live', TRUE); // load the destination/live database
+        include APPPATH . 'config/database.php';
+        if (isset($db['main_garuda']) && isset($db['live'])) {
+            $this->DB1 = $this->load->database('main_garuda', TRUE);
+            $this->DB2 = $this->load->database('live', TRUE);
+        } else {
+            $this->DB1 = null;
+            $this->DB2 = null;
+        }
     }
 
     function index()
     {
+        if ($this->DB1 === null || $this->DB2 === null) {
+            echo "Fitur perbandingan database membutuhkan konfigurasi database group 'main_garuda' dan 'live' di application/config/database.php.";
+            return;
+        }
         /*
          * This will become a list of SQL Commands to run on the Live database to bring it up to date
          */

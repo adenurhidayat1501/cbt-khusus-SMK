@@ -46,6 +46,11 @@ class Walicatatan extends CI_Controller {
         $data['smt_active'] = $smt;
 
         $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+        if (!$guru || empty($guru->wali_kelas)) {
+            $this->session->set_flashdata('error', 'Halaman ini khusus untuk Wali Kelas.');
+            redirect('dashboard');
+            return;
+        }
         $data['guru'] = $guru;
         $data['catatan_kelas'] = $this->kelas->getCatatanKelas($guru->wali_kelas, $tp->id_tp, $smt->id_smt);
         $data['catatan_siswa'] = $this->kelas->getCatatanSiswa($tp->id_tp, $smt->id_smt, $guru->wali_kelas);
@@ -75,6 +80,11 @@ class Walicatatan extends CI_Controller {
         $data['smt_active'] = $smt;
 
         $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+        if (!$guru || empty($guru->wali_kelas)) {
+            $this->session->set_flashdata('error', 'Halaman ini khusus untuk Wali Kelas.');
+            redirect('dashboard');
+            return;
+        }
         $data['guru'] = $guru;
         $data['siswa'] = $this->master->getSiswaById($id_siswa);
         $data['catatan_siswa'] = $this->kelas->getAllCatatanSiswa($id_siswa, $tp->id_tp, $smt->id_smt);
@@ -91,6 +101,11 @@ class Walicatatan extends CI_Controller {
         $smt = $this->dashboard->getSemesterActive();
         $user = $this->ion_auth->user()->row();
         $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+        if (!$guru || empty($guru->wali_kelas)) {
+            $this->session->set_flashdata('error', 'Halaman ini khusus untuk Wali Kelas.');
+            redirect('dashboard');
+            return;
+        }
 
         $text = $this->input->post('text', true);
         $level = $this->input->post('level', true);
@@ -113,6 +128,11 @@ class Walicatatan extends CI_Controller {
         $smt = $this->dashboard->getSemesterActive();
         $user = $this->ion_auth->user()->row();
         $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+        if (!$guru || empty($guru->wali_kelas)) {
+            $this->session->set_flashdata('error', 'Halaman ini khusus untuk Wali Kelas.');
+            redirect('dashboard');
+            return;
+        }
 
         $id_siswa = $this->input->post('id_siswa');
         $text = $this->input->post('text', true);

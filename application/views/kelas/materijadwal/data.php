@@ -374,6 +374,7 @@ $tempIdSelected = $id_kelas . $tp_active->id_tp . $smt_active->id_smt;
                 <div style="height: 400px;overflow-y:auto;-webkit-overflow-scrolling: touch">
                     <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview">
                         <?php
+                        $siswas = $siswas ?? [];
                         $n = 1;
                         foreach ($siswas as $siswa): ?>
                             <li class="nav-item">

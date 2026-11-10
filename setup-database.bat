@@ -79,7 +79,7 @@ if "%DB_PASS%"=="" (
 "%MYSQL_CMD%" %AUTH_PARAM% -e "CREATE DATABASE IF NOT EXISTS \`%DB_NAME%\` CHARACTER SET utf8 COLLATE utf8_general_ci;" >nul 2>nul
 if %errorlevel% neq 0 (
     echo [ERROR] Gagal terhubung ke MySQL.
-    echo         Pastikan service MySQL di XAMPP/Laragon sudah AKTIF (START)
+    echo         Pastikan service MySQL di XAMPP/Laragon sudah AKTIF START
     echo         dan username/password sudah sesuai.
     echo.
     pause
@@ -117,3 +117,4 @@ echo   membuka aplikasi via XAMPP (http://localhost/...)
 echo ======================================================================
 echo.
 pause
+

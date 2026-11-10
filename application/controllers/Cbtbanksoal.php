@@ -519,6 +519,11 @@ class Cbtbanksoal extends CI_Controller {
         $data['smt'] = $this->dashboard->getSemester();
         $data['smt_active'] = $smt;
         $data['bank'] = $this->cbt->getDataBankById($id);
+        if (!$data['bank']) {
+            $this->session->set_flashdata('error', 'Bank Soal tidak ditemukan');
+            redirect('cbtbanksoal');
+            return;
+        }
         $data['soals'] = $this->cbt->getAllSoalByBank($id);
         $data['kelas'] = $this->cbt->getKelas($tp->id_tp, $smt->id_smt);
         $terpakai = $this->cbt->getBankTerpakai([$id]);

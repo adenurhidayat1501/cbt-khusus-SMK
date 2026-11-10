@@ -1,19 +1,26 @@
 <?php
 if (!defined('BASEPATH')) define('BASEPATH', TRUE);
+if (!defined('ENVIRONMENT')) define('ENVIRONMENT', 'development');
+if (function_exists('mysqli_report')) @mysqli_report(MYSQLI_REPORT_OFF);
+
 $db_config_path = '../application/config/database.php';
 $is_installed = false;
 
 if (file_exists($db_config_path)) {
     include($db_config_path);
     if (isset($db['default']['database']) && !empty($db['default']['database'])) {
-        $mysqli = @new mysqli($db['default']['hostname'], $db['default']['username'], $db['default']['password'], $db['default']['database']);
-        if (!$mysqli->connect_errno) {
-            $check = $mysqli->query("SHOW TABLES LIKE 'users'");
-            if ($check && $check->num_rows > 0) {
-                $is_installed = true;
+        try {
+            $mysqli = @new mysqli($db['default']['hostname'], $db['default']['username'], $db['default']['password'], $db['default']['database']);
+            if (!$mysqli->connect_errno) {
+                $check = @$mysqli->query("SHOW TABLES LIKE 'users'");
+                if ($check && $check->num_rows > 0) {
+                    $is_installed = true;
+                }
+                if ($check) @$check->close();
+                @$mysqli->close();
             }
-            if ($check) $check->close();
-            $mysqli->close();
+        } catch (Throwable $e) {
+            $is_installed = false;
         }
     }
 }

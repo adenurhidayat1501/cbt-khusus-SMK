@@ -33,6 +33,11 @@ class Walisiswa extends CI_Controller {
         $tp = $this->master->getTahunActive();
         $smt = $this->master->getSemesterActive();
         $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+        if (!$guru || empty($guru->wali_kelas)) {
+            $this->session->set_flashdata('error', 'Halaman ini khusus untuk Wali Kelas.');
+            redirect('dashboard');
+            return;
+        }
         $kelas = $this->master->getKelasById($guru->wali_kelas);
 
 		$data = [

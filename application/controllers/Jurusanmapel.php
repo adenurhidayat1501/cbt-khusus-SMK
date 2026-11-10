@@ -23,14 +23,7 @@ class JurusanMapel extends CI_Controller {
 
     public function index()
 	{
-		$data = [
-			'user' => $this->ion_auth->user()->row(),
-			'judul'	=> 'Jurusan Mata Kuliah',
-			'subjudul'=> 'Data Jurusan Mata Kuliah'
-		];
-		$this->load->view('_templates/dashboard/_header.php', $data);
-		$this->load->view('relasi/jurusanmapel/data');
-		$this->load->view('_templates/dashboard/_footer.php');
+		redirect('datajurusan');
     }
 
     public function data()

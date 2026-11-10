@@ -25,26 +25,6 @@ class Luckysheet extends CI_Controller {
     }
 
     public function index() {
-        $user = $this->ion_auth->user()->row();
-        $data = [
-            'user' => $user,
-            'judul'	=> 'User Management',
-            'subjudul'=> 'Data User Siswa',
-            'setting'		=> $this->dashboard->getSetting()
-        ];
-
-        $tp = $this->dashboard->getTahunActive();
-        $smt = $this->dashboard->getSemesterActive();
-        $data['tp'] = $this->dashboard->getTahun();
-        $data['tp_active'] = $tp;
-        $data['smt'] = $this->dashboard->getSemester();
-        $data['smt_active'] = $smt;
-
-        $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-        $data['guru'] = $guru;
-
-        $this->load->view('members/guru/templates/header', $data);
-        $this->load->view('members/guru/luckyview');
-        $this->load->view('members/guru/templates/footer');
-	}
+        redirect('dashboard');
+    }
 }

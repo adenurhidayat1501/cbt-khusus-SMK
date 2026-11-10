@@ -11,7 +11,7 @@ class HasilUjian extends CI_Controller {
 		
 		$this->load->library(['datatables']);// Load Library Ignited-Datatables
 		$this->load->model('Master_model', 'master');
-		$this->load->model('Ujian_model', 'ujian');
+		$this->load->model('Cbt_model', 'cbt');
 		
 		$this->user = $this->ion_auth->user()->row();
 	}
@@ -40,14 +40,7 @@ class HasilUjian extends CI_Controller {
 
 	public function index()
 	{
-		$data = [
-			'user' => $this->user,
-			'judul'	=> 'Ujian',
-			'subjudul'=> 'Hasil Ujian',
-		];
-		$this->load->view('_templates/dashboard/_header.php', $data);
-		$this->load->view('ujian/hasil');
-		$this->load->view('_templates/dashboard/_footer.php');
+		redirect('cbtnilai');
 	}
 	
 	public function detail($id)

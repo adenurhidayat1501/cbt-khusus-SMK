@@ -46,6 +46,11 @@ class Walistruktur extends CI_Controller {
         $data['smt_active'] = $smt;
 
         $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+        if (!$guru || empty($guru->wali_kelas)) {
+            $this->session->set_flashdata('error', 'Halaman ini khusus untuk Wali Kelas.');
+            redirect('dashboard');
+            return;
+        }
         //$data['kelas'] = $guru->wali_kelas;
         $struktur = $this->kelas->getStrukturKelas($guru->wali_kelas);
         if ($struktur==null) {

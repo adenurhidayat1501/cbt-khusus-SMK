@@ -1835,6 +1835,8 @@ CREATE TABLE `users`  (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
+INSERT INTO `users` (`id`, `ip_address`, `username`, `password`, `email`, `created_on`, `active`, `first_name`, `last_name`) VALUES
+(1, '127.0.0.1', 'admin', '$2y$10$D1hSc6D90ZnO5tUU4.S89uaLQcIpGTc0s//gWJTz6dzjP52R/fpPG', 'admin@smkncipatujah.sch.id', 1600000000, 1, 'Administrator', 'Necis');
 
 -- ----------------------------
 -- Table structure for users_groups
@@ -1848,11 +1850,13 @@ CREATE TABLE `users_groups`  (
   UNIQUE INDEX `uc_users_groups`(`user_id`, `group_id`) USING BTREE,
   INDEX `fk_users_groups_users1_idx`(`user_id`) USING BTREE,
   INDEX `fk_users_groups_groups1_idx`(`group_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of users_groups
 -- ----------------------------
+INSERT INTO `users_groups` (`id`, `user_id`, `group_id`) VALUES
+(1, 1, 1);
 
 -- ----------------------------
 -- Table structure for users_profile
@@ -1865,10 +1869,12 @@ CREATE TABLE `users_profile`  (
   `level_access` int(11) NOT NULL DEFAULT 0,
   `foto` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
   PRIMARY KEY (`id_user`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of users_profile
 -- ----------------------------
+INSERT INTO `users_profile` (`id_user`, `nama_lengkap`, `jabatan`, `level_access`, `foto`) VALUES
+(1, 'Administrator', 'Administrator CBT', 1, NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -32,83 +32,14 @@ class Kelasmateri extends CI_Controller {
 	}
 
 	public function index() {
-	    $jenis = $this->input->get('jenis');
-		$user = $this->ion_auth->user()->row();
-        $setting = $this->dashboard->getSetting();
-		$data = [
-			'user' => $user,
-			'judul' => 'Materi Belajar',
-			'subjudul' => 'Materi',
-			'setting'		=> $setting
-		];
-
-		$tp = $this->dashboard->getTahunActive();
-		$smt = $this->dashboard->getSemesterActive();
-
-		$data['tp'] = $this->dashboard->getTahun();
-		$data['tp_active'] = $tp;
-		$data['smt'] = $this->dashboard->getSemester();
-		$data['smt_active'] = $smt;
-
-        $data['jurusan'] = $this->dropdown->getAllJurusan();
-        $data['level'] = $this->dropdown->getAllLevel($setting->jenjang);
-
-        $data['kelas'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
-
-        if ($this->ion_auth->is_admin()) {
-            $id_guru = $this->input->get('id');
-
-			$data['profile'] = $this->dashboard->getProfileAdmin($user->id);
-			$allGuru = $this->dropdown->getAllGuru();
-            array_unshift($allGuru, ['00' => 'Semua Guru']);
-			$data['gurus'] = $allGuru;
-            $data['id_guru'] = $id_guru==null ? '' : $id_guru;
-
-            $materi = [];
-            $kelas_materi = [];
-            $jadwal_materi = [];
-            if ($id_guru!=null) {
-                $materi = $this->kelas->getAllMateriKelas($id_guru, '1');
-                foreach ($materi as $m) {
-                    $km = $this->kelas->getNamaKelasById(unserialize($m->materi_kelas));
-                    if ($km==null) {
-                        $km = $this->kelas->getNamaKelasByKode(unserialize($m->materi_kelas));
-                    }
-                    $kelas_materi[$m->id_materi] = $km;
-                    $jadwal_materi[$m->id_materi] = $this->kelas->getJadwalByMateri($m->id_materi, $jenis, $tp->id_tp, $smt->id_smt);
-                }
-            }
-
-            $data['materi'] = $materi;
-            $data['kelas_materi'] = $kelas_materi;
-            $data['jadwal_materi'] = $jadwal_materi;
-
-			$this->load->view('_templates/dashboard/_header', $data);
-			$this->load->view('kelas/materi/data');
-			$this->load->view('_templates/dashboard/_footer');
+		$jenis = $this->input->get('jenis');
+		$id = $this->input->get('id');
+		$query = $id !== null ? ('?id=' . urlencode($id)) : '';
+		if ($jenis == '2') {
+			redirect('kelasmateri/tugas' . $query);
 		} else {
-			$guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-            $materi = $this->kelas->getAllMateriKelas($guru->id_guru, '1');
-			$kelas_materi = [];
-			$jadwal_materi = [];
-			foreach ($materi as $m) {
-				$kelas_materi[$m->id_materi] = $this->kelas->getNamaKelasById(unserialize($m->materi_kelas));
-				$jadwal_materi[$m->id_materi] = $this->kelas->getJadwalByMateri($m->id_materi, $jenis, $tp->id_tp, $smt->id_smt);
-			}
-
-            $nguru[$guru->id_guru] = $guru->nama_guru;
-            $data['gurus'] = $nguru;
-            $data['guru'] = $guru;
-            $data['id_guru'] = $guru->id_guru;
-			$data['materi'] = $materi;
-			$data['kelas_materi'] = $kelas_materi;
-			$data['jadwal_materi'] = $jadwal_materi;
-
-			$this->load->view('members/guru/templates/header', $data);
-            $this->load->view('kelas/materi/data');
-			$this->load->view('members/guru/templates/footer');
+			redirect('kelasmateri/materi' . $query);
 		}
-
 	}
 
     public function materi() {

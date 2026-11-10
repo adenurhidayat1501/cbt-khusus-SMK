@@ -6,17 +6,21 @@
  * Time: 22:29
  */
 
+$jenis = isset($jenis) ? $jenis : "1";
 $urlJenis = $jenis == "1" ? "materi" : "tugas";
+$materi = $materi ?? [];
 $total = count($materi);
 $all_materi = [];
 $curr_materi = [];
-foreach ($materi as $k => $m) {
-    if ($m->smt == $smt_active->smt && $m->tahun == $tp_active->tahun) {
-        array_push($curr_materi, $m);
-        //unset($materi[$k]);
-    } else {
-        array_push($all_materi, $m);
-        //unset($materi[$k]);
+if (!empty($materi)) {
+    foreach ($materi as $k => $m) {
+        if (isset($smt_active) && isset($tp_active) && $m->smt == $smt_active->smt && $m->tahun == $tp_active->tahun) {
+            array_push($curr_materi, $m);
+            //unset($materi[$k]);
+        } else {
+            array_push($all_materi, $m);
+            //unset($materi[$k]);
+        }
     }
 }
 ?>
@@ -37,6 +41,7 @@ foreach ($materi as $k => $m) {
             <?php
             $days = [0, 1, 2, 3, 4, 5, 6];
             $disabledDay = [];
+            $jadwal_mapel = $jadwal_mapel ?? [];
             foreach ($jadwal_mapel as $km => $vm) {
                 foreach ($vm as $kk => $vk) {
                     $disabledDay[$km][$kk] = $days;

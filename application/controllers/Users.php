@@ -49,9 +49,11 @@ class Users extends CI_Controller {
         $data['smt'] = $this->admindashboard->getSemester();
         $data['smt_active'] = $this->admindashboard->getSemesterActive();
 
-        $this->load->view('_templates/dashboard/header.php', $data);
+        $data['profile'] = $this->admindashboard->getProfileAdmin($data['user']->id);
+        $data['setting'] = $this->admindashboard->getSetting();
+        $this->load->view('_templates/dashboard/_header.php', $data);
 		$this->load->view('users/data');
-		$this->load->view('_templates/dashboard/footer.php');
+		$this->load->view('_templates/dashboard/_footer.php');
 	}
 	
 	public function edit($id)
@@ -65,9 +67,11 @@ class Users extends CI_Controller {
 			'groups'	=> $this->ion_auth->groups()->result(),
 			'level'		=> $level[0]
 		];
-		$this->load->view('_templates/dashboard/header.php', $data);
+        $data['profile'] = $this->admindashboard->getProfileAdmin($data['user']->id);
+        $data['setting'] = $this->admindashboard->getSetting();
+		$this->load->view('_templates/dashboard/_header.php', $data);
 		$this->load->view('users/edit');
-		$this->load->view('_templates/dashboard/footer.php');
+		$this->load->view('_templates/dashboard/_footer.php');
 	}
 
 	public function edit_info()

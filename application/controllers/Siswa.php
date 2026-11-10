@@ -1765,7 +1765,7 @@ class Siswa extends CI_Controller
             if (count($jawaban_pg)>0) {
                 foreach ($jawaban_pg as $jwb_pg) {
                     if ($jwb_pg != null && $jwb_pg->jawaban_siswa != null) {
-                        if (strtoupper($jwb_pg->jawaban_siswa) == strtoupper($jwb_pg->jawaban_benar)) {
+                        if (strtoupper($jwb_pg->jawaban_siswa ?? '') == strtoupper($jwb_pg->jawaban_benar ?? '')) {
                             $benar_pg += 1;
                         } else {
                             $salah_pg += 1;
@@ -2023,7 +2023,7 @@ class Siswa extends CI_Controller
                         foreach ($jawaban_pg as $num => $jwb_pg) {
                             $benar = false;
                             if ($jwb_pg != null && $jwb_pg->jawaban_siswa != null) {
-                                if (strtoupper($jwb_pg->jawaban_siswa) == strtoupper($jwb_pg->jawaban)) {
+                                if (strtoupper($jwb_pg->jawaban_siswa ?? '') == strtoupper($jwb_pg->jawaban ?? '')) {
                                     $benar_pg += 1;
                                     $benar = true;
                                 } else {

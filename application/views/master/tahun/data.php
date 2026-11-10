@@ -59,9 +59,7 @@
                                 <tbody>
                                 <?php foreach ($tp as $key => $value) : ?>
                                     <tr>
-                                        <td class="d-none">
-                                            <?= $value->id_tp ?>
-                                        </td>
+                                        <td class="d-none"><?= $value->id_tp ?></td>
                                         <td class="text-center">
                                             <?= ($key + 1) ?>
                                         </td>
@@ -110,9 +108,7 @@
                                 <tbody>
                                 <?php foreach ($smt as $key => $value) : ?>
                                     <tr>
-                                        <td class="d-none">
-                                            <?= $value->id_smt ?>
-                                        </td>
+                                        <td class="d-none"><?= $value->id_smt ?></td>
                                         <td class="text-center">
                                             <?= ($key + 1) ?>
                                         </td>
@@ -132,8 +128,8 @@
                                 <?php endforeach; ?>
                                 </tbody>
                             </table>
-                            <!--
                             <?= form_close() ?>
+                            <!--
                             <?= form_open('', array('id' => 'hariefektif')) ?>
                             <label>Jumlah Hari Efektif Satu Semester</label>
                             <div class="input-group">
@@ -184,8 +180,8 @@
                 -->
             </div>
             <div class="modal-footer">
-                <input type="hidden" id="editIdTahun" class="form-control">
-                <input type="hidden" id="method" name="method" class="form-control">
+                <input type="hidden" id="editIdTahun" name="id_tahun" class="form-control">
+                <input type="hidden" id="method" name="method" value="add" class="form-control">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-plus"></i> Simpan
@@ -265,7 +261,7 @@
         });
 
         $('#createTahunModal').on('show.bs.modal', function (e) {
-            var method = $(e.relatedTarget).data('from');
+            var method = $(e.relatedTarget).data('from') || 'add';
             $(e.currentTarget).find('input[id="method"]').val(method);
 
             if (method === 'edit') {
@@ -275,9 +271,6 @@
 
                 $(e.currentTarget).find('input[id="editIdTahun"]').val(id);
                 $(e.currentTarget).find('input[id="createtahun"]').val(tahun);
-
-                var attrId = document.getElementById("editIdTahun");
-                attrId.setAttribute("name", "id_tahun");
             } else {
                 $('#createModalLabel').text('Tambah Tahun');
                 $(e.currentTarget).find('input[id="editIdTahun"]').val('');
@@ -365,13 +358,10 @@
             });
         });
 
-        $('#create').submit('click', function (e) {
+        $('#create').on('submit', function (e) {
             e.stopPropagation();
             e.preventDefault();
             e.stopImmediatePropagation();
-            //var tahun = $('#createtahun').val();
-            //var active = $('#createactive option:selected').val()
-            console.log("data:", $(this).serialize());
 
             $.ajax({
                 url: base_url + "datatahun/add",
@@ -380,16 +370,14 @@
                 data: $(this).serialize(),
                 success: function (data) {
                     if (data && data.status) {
-                        location.href = base_url + 'datatahun';
+                        $('#createTahunModal').modal('hide');
+                        window.location.href = base_url + 'datatahun';
                     } else {
-                        showDangerToast(data && data.message ? data.message : 'Gagal menambah tahun pelajaran');
+                        showDangerToast(data && data.message ? data.message : 'Gagal menyimpan tahun pelajaran');
                     }
                 }, error: function (xhr, status, error) {
-                    $('#createTahunModal').modal('hide').data('bs.modal', null);
-                    $('#createTahunModal').on('hidden', function () {
-                        $(this).data('modal', null);  // destroys modal
-                    });
-                    showDangerToast('Gagal menambah tahun pelajaran');
+                    $('#createTahunModal').modal('hide');
+                    showDangerToast('Gagal menyimpan tahun pelajaran');
                 }
             });
             return false;

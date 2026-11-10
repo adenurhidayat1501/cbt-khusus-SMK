@@ -72,7 +72,7 @@ class Datatahun extends CI_Controller {
 				$id_tp = $tps->id;
 				$tahun = $tps->tp;
 
-				if ($id_tp === $aktif) {
+				if (trim((string)$id_tp) === trim((string)$aktif)) {
 					$active = 1;
 				} else {
 					$active = 0;
@@ -107,7 +107,7 @@ class Datatahun extends CI_Controller {
 				$id_smt = $tps->id;
 				$smt = $tps->Semester;
 
-				if ($id_smt === $aktif) {
+				if (trim((string)$id_smt) === trim((string)$aktif)) {
 					$active = 1;
 				} else {
 					$active = 0;
@@ -135,13 +135,19 @@ class Datatahun extends CI_Controller {
     public function add() {
     	$method = $this->input->post('method', true);
 		$tahun = trim($this->input->post('tahun', true) ?? '');
+		$id = $this->input->post('id_tahun', true);
 
 		if (empty($tahun)) {
 			$this->output_json(['status' => false, 'message' => 'Tahun pelajaran tidak boleh kosong']);
 			return;
 		}
 
-        if ($method === 'add') {
+        if ($method === 'add' || empty($id)) {
+			$cek = $this->db->get_where('master_tp', ['tahun' => $tahun])->row();
+			if ($cek) {
+				$this->output_json(['status' => false, 'message' => 'Tahun pelajaran ' . $tahun . ' sudah ada']);
+				return;
+			}
 			$insert = [
 				"tahun" => $tahun,
 				"active" => 0
@@ -149,7 +155,11 @@ class Datatahun extends CI_Controller {
 			$data = $this->master->create('master_tp', $insert);
 			$this->logging->saveLog(3, 'menambah tahun pelajaran');
 		} else {
-        	$id = $this->input->post('id_tahun', true);
+			$cek = $this->db->get_where('master_tp', ['tahun' => $tahun, 'id_tp !=' => $id])->row();
+			if ($cek) {
+				$this->output_json(['status' => false, 'message' => 'Tahun pelajaran ' . $tahun . ' sudah digunakan']);
+				return;
+			}
 			$update = array(
 				'id_tp'	=> $id,
 				'tahun' => $tahun
@@ -157,7 +167,7 @@ class Datatahun extends CI_Controller {
 			$data = $this->master->update('master_tp', $update, 'id_tp', $id);
 			$this->logging->saveLog(4, 'mengedit tahun pelajaran');
 		}
-        $this->output_json(['status' => (bool)$data, 'message' => $data ? 'Berhasil' : 'Gagal menyimpan tahun']);
+        $this->output_json(['status' => (bool)$data, 'message' => $data ? 'Berhasil menyimpan tahun' : 'Gagal menyimpan tahun']);
     }
 
     public function saveHariEfektif() {

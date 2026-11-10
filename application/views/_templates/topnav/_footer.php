@@ -6,7 +6,12 @@
 <!-- /.content-wrapper -->
 <footer class="main-footer">
     <div class="container">
-        <?= strftime('%A, %d %B %Y') ?>, <span class="live-clock"><?= date('H:i:s') ?></span>
+        <?php
+        $daysIndo = ['Sunday'=>'Minggu','Monday'=>'Senin','Tuesday'=>'Selasa','Wednesday'=>'Rabu','Thursday'=>'Kamis','Friday'=>'Jumat','Saturday'=>'Sabtu'];
+        $monthsIndo = ['January'=>'Januari','February'=>'Februari','March'=>'Maret','April'=>'April','May'=>'Mei','June'=>'Juni','July'=>'Juli','August'=>'Agustus','September'=>'September','October'=>'Oktober','November'=>'November','December'=>'Desember'];
+        $tglStr = ($daysIndo[date('l')] ?? date('l')) . ', ' . date('d') . ' ' . ($monthsIndo[date('F')] ?? date('F')) . ' ' . date('Y');
+        ?>
+        <?= $tglStr ?>, <span class="live-clock"><?= date('H:i:s') ?></span>
         <div class="pull-right hidden-xs">
             <b>Ujian Online</b> v2
         </div>

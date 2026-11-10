@@ -82,6 +82,8 @@ class Bukuinduk extends CI_Controller {
 
         $deskFisik = $this->rapor->getAllDeskripsiFisikKelas();
         $fisik_siswa = $this->rapor->getAllRaporFisik();
+        $rapor_fisik = [];
+        $noinduk = [];
         $data_siswa = [];
         $thn_siswa = [];
         foreach ($siswas as $id_siswa=>$siswa) {
