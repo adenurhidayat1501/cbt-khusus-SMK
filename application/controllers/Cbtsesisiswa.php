@@ -87,7 +87,7 @@ class Cbtsesisiswa extends CI_Controller {
 
 	public function update() {
 		$data = $this->cbt->updateSesi();
-		$this->output->set_content_type('application/json')->set_output($data);
+		$this->output_json(['status' => (bool)$data]);
 	}
 
 	public function delete() {

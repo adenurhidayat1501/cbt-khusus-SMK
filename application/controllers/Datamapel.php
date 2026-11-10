@@ -98,7 +98,7 @@ class Datamapel extends CI_Controller
         } else {
             $data = $this->master->create('master_kelompok_mapel', $insert);
         }
-        $this->output->set_content_type('application/json')->set_output($data);
+        $this->output_json(['status' => (bool)$data]);
     }
 
     public function hapusKelompok() {
@@ -136,7 +136,7 @@ class Datamapel extends CI_Controller
             "jenjang" => $setting->jenjang
 		];
 		$data = $this->master->create('master_mapel', $insert);
-		$this->output->set_content_type('application/json')->set_output($data);
+		$this->output_json(['status' => (bool)$data]);
 	}
 
     public function getDataKelompok() {
@@ -175,7 +175,7 @@ class Datamapel extends CI_Controller
 
 	public function update() {
 		$data = $this->master->updateMapel();
-		$this->output->set_content_type('application/json')->set_output($data);
+		$this->output_json(['status' => (bool)$data]);
 	}
 
     public function aktifkan($id) {

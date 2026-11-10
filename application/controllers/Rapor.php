@@ -896,15 +896,20 @@ class Rapor extends CI_Controller {
     public function importHarian() {
         $posts = $this->input->post('siswa', true);
         $updated = 0;
-        $this->db->trans_start();
-        foreach ((array)$posts as $data) {
-            $update = $this->db->replace('rapor_nilai_harian', $data);
-            if ($update) $updated++;
+        if (is_array($posts)) {
+            $this->db->trans_start();
+            foreach ($posts as $data) {
+                if (is_array($data) && !empty($data['id_mapel']) && !empty($data['id_kelas']) && !empty($data['id_siswa'])) {
+                    unset($data['id'], $data['nisn'], $data['namasiswa']);
+                    $update = $this->db->replace('rapor_nilai_harian', $data);
+                    if ($update) $updated++;
+                }
+            }
+            $this->db->trans_complete();
         }
-        $this->db->trans_complete();
 
-        $data['updated'] = $updated;
-        $this->output_json($data);
+        $res['updated'] = $updated;
+        $this->output_json($res);
     }
 
     public function inputPts($id_mapel, $id_kelas) {
@@ -1017,13 +1022,18 @@ class Rapor extends CI_Controller {
     public function importPts() {
         $inputs = $this->input->post('siswa', true);
         $updated = 0;
-        $this->db->trans_start();
-        foreach ($inputs as $data) {
-            $update = $this->db->replace('rapor_nilai_pts', $data);
-            if ($update) $updated++;
+        if (is_array($inputs)) {
+            $this->db->trans_start();
+            foreach ($inputs as $data) {
+                if (is_array($data) && !empty($data['id_siswa'])) {
+                    unset($data['id'], $data['nisn'], $data['namasiswa']);
+                    $update = $this->db->replace('rapor_nilai_pts', $data);
+                    if ($update) $updated++;
+                }
+            }
+            $this->db->trans_complete();
         }
-        $this->db->trans_complete();
-        echo json_encode($updated);
+        $this->output_json($updated);
     }
 
     public function inputPas($id_mapel, $id_kelas) {
@@ -1199,13 +1209,18 @@ class Rapor extends CI_Controller {
     public function importPas() {
         $inputs = $this->input->post('siswa', true);
         $updated = 0;
-        $this->db->trans_start();
-        foreach ($inputs as $data) {
-            $update = $this->db->replace('rapor_nilai_akhir', $data);
-            if ($update) $updated++;
+        if (is_array($inputs)) {
+            $this->db->trans_start();
+            foreach ($inputs as $data) {
+                if (is_array($data) && !empty($data['id_siswa'])) {
+                    unset($data['id'], $data['nisn'], $data['namasiswa']);
+                    $update = $this->db->replace('rapor_nilai_akhir', $data);
+                    if ($update) $updated++;
+                }
+            }
+            $this->db->trans_complete();
         }
-        $this->db->trans_complete();
-        echo json_encode($updated);
+        $this->output_json($updated);
     }
 
     //Ekstrakurikuler
@@ -1313,13 +1328,21 @@ class Rapor extends CI_Controller {
     public function importEkstra() {
         $inputs = $this->input->post('siswa', true);
         $updated = 0;
-        $this->db->trans_start();
-        foreach ($inputs as $data) {
-            $update = $this->db->replace('rapor_nilai_ekstra', $data);
-            if ($update) $updated++;
+        if (is_array($inputs)) {
+            $this->db->trans_start();
+            foreach ($inputs as $data) {
+                if (is_array($data) && !empty($data['id_siswa'])) {
+                    if (isset($data['id_mapel']) && !isset($data['id_ekstra'])) {
+                        $data['id_ekstra'] = $data['id_mapel'];
+                    }
+                    unset($data['id'], $data['nisn'], $data['namasiswa'], $data['id_mapel']);
+                    $update = $this->db->replace('rapor_nilai_ekstra', $data);
+                    if ($update) $updated++;
+                }
+            }
+            $this->db->trans_complete();
         }
-        $this->db->trans_complete();
-        echo json_encode($updated);
+        $this->output_json($updated);
     }
     //END Ekstrakurikuler
 

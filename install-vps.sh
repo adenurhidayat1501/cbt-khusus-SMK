@@ -213,8 +213,9 @@ else
     echo -e "${YELLOW}[!] File master.sql tidak ditemukan di $SQL_FILE, lewati impor.${NC}"
 fi
 
-# Ensure school setting is configured as SADUCI CBT
+# Ensure school setting is configured as SADUCI CBT & fix schema defaults
 mariadb "$DB_NAME" -e "INSERT INTO \`setting\` (\`id_setting\`, \`kode_sekolah\`, \`sekolah\`, \`nama_aplikasi\`, \`alamat\`, \`desa\`, \`kecamatan\`, \`kota\`, \`provinsi\`, \`logo_kanan\`, \`logo_kiri\`, \`versi\`) VALUES (1, 'SADUCI', 'SMP NEGERI SATU ATAP 2 CIPATUJAH', 'SADUCI CBT', 'Cipatujah', 'Cipatujah', 'Cipatujah', 'Kab. Tasikmalaya', 'Jawa Barat', 'assets/img/saduci_logo.png', 'assets/img/saduci_logo.png', '1.5.3') ON DUPLICATE KEY UPDATE \`nama_aplikasi\` = 'SADUCI CBT', \`sekolah\` = 'SMP NEGERI SATU ATAP 2 CIPATUJAH', \`kota\` = 'Kab. Tasikmalaya', \`logo_kanan\` = 'assets/img/saduci_logo.png', \`logo_kiri\` = 'assets/img/saduci_logo.png';" 2>/dev/null || true
+mariadb "$DB_NAME" -e "ALTER TABLE \`master_tp\` MODIFY \`active\` int(11) NOT NULL DEFAULT 0; ALTER TABLE \`master_kelas\` MODIFY \`jurusan_id\` int(11) NOT NULL DEFAULT 0;" 2>/dev/null || true
 
 # ------------------------------------------------------------------------------
 # 6. Deploy Files to Web Root & Configure Permissions

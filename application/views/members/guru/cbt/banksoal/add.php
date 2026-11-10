@@ -97,7 +97,7 @@ $kelasSelected = json_encode(unserialize($bank->bank_kelas ?? ''));
                         <div class='col-8 col-md-2 mb-3'>
                             <label>Pilih Kelas</label><br>
                             <select name="kelas[]" id="select-kelas" class="select2 form-control form-control-sm"
-                                    multiple="multiple" required=""></select>
+                                    multiple="multiple"></select>
                         </div>
                         <div class='col-6 col-md-2 mb-3'>
                             <label>Jumlah Soal PG</label>

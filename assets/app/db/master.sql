@@ -1151,7 +1151,7 @@ CREATE TABLE `master_kelas`  (
   `id_smt` int(11) NOT NULL,
   `nama_kelas` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `kode_kelas` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `jurusan_id` int(11) NOT NULL,
+  `jurusan_id` int(11) NOT NULL DEFAULT 0,
   `level_id` int(11) NOT NULL,
   `guru_id` int(11) NULL DEFAULT NULL,
   `siswa_id` int(11) NULL DEFAULT NULL,
@@ -1342,17 +1342,19 @@ INSERT INTO `master_smt` VALUES (2, 'Genap', 'II (dua)', 0);
 CREATE TABLE `master_tp`  (
   `id_tp` int(11) NOT NULL AUTO_INCREMENT,
   `tahun` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `active` int(11) NOT NULL,
+  `active` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_tp`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of master_tp
 -- ----------------------------
 INSERT INTO `master_tp` VALUES (1, '2020/2021', 0);
 INSERT INTO `master_tp` VALUES (2, '2021/2022', 0);
-INSERT INTO `master_tp` VALUES (3, '2022/2023', 1);
+INSERT INTO `master_tp` VALUES (3, '2022/2023', 0);
 INSERT INTO `master_tp` VALUES (4, '2023/2024', 0);
+INSERT INTO `master_tp` VALUES (5, '2024/2025', 1);
+INSERT INTO `master_tp` VALUES (6, '2025/2026', 0);
 
 -- ----------------------------
 -- Table structure for post

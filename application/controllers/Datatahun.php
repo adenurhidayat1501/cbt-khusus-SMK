@@ -65,25 +65,31 @@ class Datatahun extends CI_Controller {
 	public function gantiTahun() {
 		$aktif = $this->input->post('active', true);
 		$inputTp = json_decode($this->input->post('tahun', false));
+		$update = [];
 
-		foreach ($inputTp as $tps) {
-			$id_tp = $tps->id;
-			$tahun = $tps->tp;
+		if (is_array($inputTp) || is_object($inputTp)) {
+			foreach ($inputTp as $tps) {
+				$id_tp = $tps->id;
+				$tahun = $tps->tp;
 
-			if ($id_tp === $aktif) {
-				$active = 1;
-			} else {
-				$active = 0;
+				if ($id_tp === $aktif) {
+					$active = 1;
+				} else {
+					$active = 0;
+				}
+
+				$update[] = array(
+					'id_tp'     => $id_tp,
+					'tahun' 	=> $tahun,
+					'active'    => $active
+				);
 			}
 
-			$update[] = array(
-				'id_tp'     => $id_tp,
-				'tahun' 	=> $tahun,
-				'active'    => $active
-			);
+			if (count($update) > 0) {
+				$this->dashboard->update('master_tp', $update, 'id_tp', null, true);
+			}
 		}
 
-		$this->dashboard->update('master_tp', $update, 'id_tp', null, true);
 		$data['msg'] = 'Merubah Tahun Aktif';
 		$data['update'] = $update;
 		$data['status'] = true;
@@ -94,25 +100,31 @@ class Datatahun extends CI_Controller {
 	public function gantiSemester() {
 		$aktif = $this->input->post('active', true);
 		$inputSmt = json_decode($this->input->post('semester', false));
+		$update = [];
 
-		foreach ($inputSmt as $tps) {
-			$id_smt = $tps->id;
-			$smt = $tps->Semester;
+		if (is_array($inputSmt) || is_object($inputSmt)) {
+			foreach ($inputSmt as $tps) {
+				$id_smt = $tps->id;
+				$smt = $tps->Semester;
 
-			if ($id_smt === $aktif) {
-				$active = 1;
-			} else {
-				$active = 0;
+				if ($id_smt === $aktif) {
+					$active = 1;
+				} else {
+					$active = 0;
+				}
+
+				$update[] = array(
+					'id_smt'    => $id_smt,
+					'smt'       => $smt,
+					'active'    => $active
+				);
 			}
 
-			$update[] = array(
-				'id_smt'    => $id_smt,
-				'smt'       => $smt,
-				'active'    => $active
-			);
+			if (count($update) > 0) {
+				$this->dashboard->update('master_smt', $update, 'id_smt', null, true);
+			}
 		}
 
-		$this->dashboard->update('master_smt', $update, 'id_smt', null, true);
 		$data['msg'] = 'Merubah Semester Aktif';
 		$data['update'] = $update;
 		$data['status'] = true;
@@ -122,10 +134,18 @@ class Datatahun extends CI_Controller {
 
     public function add() {
     	$method = $this->input->post('method', true);
-		$tahun = $this->input->post('tahun', true);
+		$tahun = trim($this->input->post('tahun', true) ?? '');
+
+		if (empty($tahun)) {
+			$this->output_json(['status' => false, 'message' => 'Tahun pelajaran tidak boleh kosong']);
+			return;
+		}
 
         if ($method === 'add') {
-			$insert = ["tahun" => $tahun];
+			$insert = [
+				"tahun" => $tahun,
+				"active" => 0
+			];
 			$data = $this->master->create('master_tp', $insert);
 			$this->logging->saveLog(3, 'menambah tahun pelajaran');
 		} else {
@@ -137,7 +157,7 @@ class Datatahun extends CI_Controller {
 			$data = $this->master->update('master_tp', $update, 'id_tp', $id);
 			$this->logging->saveLog(4, 'mengedit tahun pelajaran');
 		}
-        $this->output->set_content_type('application/json')->set_output($data);
+        $this->output_json(['status' => (bool)$data, 'message' => $data ? 'Berhasil' : 'Gagal menyimpan tahun']);
     }
 
     public function saveHariEfektif() {

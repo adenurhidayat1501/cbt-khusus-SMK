@@ -744,17 +744,17 @@ class Dataguru extends CI_Controller
 
 		$mapels = [];
 		$check_mapel = $this->input->post('mapel', true);
-		if ($check_mapel) {
-			$row_mapels = count($this->input->post('mapel', true));
-			for ($i = 0; $i <= $row_mapels; $i++) {
+		if ($check_mapel && is_array($check_mapel)) {
+			$row_mapels = count($check_mapel);
+			for ($i = 0; $i < $row_mapels; $i++) {
 				$mapel = $this->input->post('mapel[' . $i . ']', true);
 				$nama_mapel = $this->input->post('nama_mapel'.$mapel, true);
 
 				$check = $this->input->post('kelasmapel'.$mapel, true);
-				if ($check) {
-					$row_kelas = count($this->input->post('kelasmapel'.$mapel, true));
+				if ($check && is_array($check)) {
+					$row_kelas = count($check);
 					$kelas = [];
-					for ($j = 0; $j <= $row_kelas; $j++) {
+					for ($j = 0; $j < $row_kelas; $j++) {
 						$kelasmapel = $this->input->post('kelasmapel'.$mapel.'[' . $j . ']', true);
                         if ($copy) {
                             if (isset($kelass2[$kelasmapel])) {
@@ -766,9 +766,11 @@ class Dataguru extends CI_Controller
                                 }
                             }
                         } else {
-                            $kelas[] = [
-                                'kelas' => $kelasmapel
-                            ];
+                            if (!empty($kelasmapel)) {
+                                $kelas[] = [
+                                    'kelas' => $kelasmapel
+                                ];
+                            }
                         }
 					}
 
@@ -784,29 +786,33 @@ class Dataguru extends CI_Controller
 
         $ekstras = [];
         $check_ekstra = $this->input->post('ekstra', true);
-        if ($check_ekstra) {
-            $row_ekstras = count($this->input->post('ekstra', true));
-            for ($i = 0; $i <= $row_ekstras; $i++) {
+        if ($check_ekstra && is_array($check_ekstra)) {
+            $row_ekstras = count($check_ekstra);
+            for ($i = 0; $i < $row_ekstras; $i++) {
                 $ekstra = $this->input->post('ekstra[' . $i . ']', true);
                 $nama_ekstra = $this->input->post('nama_ekstra'.$ekstra, true);
 
                 $check = $this->input->post('kelasekstra'.$ekstra, true);
-                if ($check) {
-                    $row_kelas = count($this->input->post('kelasekstra'.$ekstra, true));
+                if ($check && is_array($check)) {
+                    $row_kelas = count($check);
                     $kelas = [];
-                    for ($j = 0; $j <= $row_kelas; $j++) {
+                    for ($j = 0; $j < $row_kelas; $j++) {
                         $kelasekstra = $this->input->post('kelasekstra'.$ekstra.'[' . $j . ']', true);
                         if ($copy) {
                             if (isset($kelass2[$kelasekstra])) {
                                 $tmp_nama2 = $kelass2[$kelasekstra];
-                                $kelas[] = [
-                                    'kelas' => $kelass1[$tmp_nama2]
-                                ];
+                                if (isset($kelass1[$tmp_nama2])) {
+                                    $kelas[] = [
+                                        'kelas' => $kelass1[$tmp_nama2]
+                                    ];
+                                }
                             }
                         } else {
-                            $kelas[] = [
-                                'kelas' => $kelasekstra
-                            ];
+                            if (!empty($kelasekstra)) {
+                                $kelas[] = [
+                                    'kelas' => $kelasekstra
+                                ];
+                            }
                         }
                     }
 

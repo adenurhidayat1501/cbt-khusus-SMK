@@ -170,7 +170,7 @@ class Datasiswa extends CI_Controller {
                 "tahun_masuk"   => $this->input->post('tahun_masuk', true),
                 "username"      => $username,
                 "password"      => $this->input->post('password', true),
-                "foto"          => 'uploads/foto_siswa/'.$nis.'jpg'
+                "foto"          => 'uploads/foto_siswa/'.$nis.'.jpg'
             ];
 
             $this->db->set('uid','UUID()',FALSE);
@@ -635,7 +635,8 @@ class Datasiswa extends CI_Controller {
             $this->form_validation->set_rules('username', 'Username', 'required|trim' . $u_name);
             if ($this->form_validation->run() == FALSE) {
                 $duplikat[] = $data;
-                $errors[$data['namasiswa']] = [
+                $err_key = isset($data['namasiswa']) ? $data['namasiswa'] : (isset($data['nama']) ? $data['nama'] : 'siswa_'.$key1);
+                $errors[$err_key] = [
                     'nis' => form_error('nis'),
                     'nisn' => form_error('nisn'),
                     'username' => form_error('username'),

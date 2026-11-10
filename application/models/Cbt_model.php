@@ -1146,15 +1146,16 @@ class Cbt_model extends CI_Model {
 
     public function saveBankSoal($tp, $smt) {
 		$id = $this->input->post('id_bank', true);
-		$rows = count($this->input->post('kelas', true));
-		//$jml_pg = strip_tags($this->input->post('jml_soal', TRUE));
-		//$jml_esai = strip_tags($this->input->post('jml_esai', TRUE));
+		$raw_kelas = $this->input->post('kelas', true);
+		$rows_kelas = is_array($raw_kelas) ? array_values($raw_kelas) : [];
 
 		$kelas = [];
-		for ($i = 0; $i <= $rows; $i++) {
-			$kelas[] = [
-				'kelas_id' => $this->input->post('kelas[' . $i . ']', true)
-			];
+		foreach ($rows_kelas as $k_id) {
+			if (!empty($k_id)) {
+				$kelas[] = [
+					'kelas_id' => $k_id
+				];
+			}
 		}
 		$jumlah = serialize($kelas);
 		$data = array(
@@ -1230,12 +1231,15 @@ class Cbt_model extends CI_Model {
     }
 
     public function updateBankSoal($id) {
-        $rows = count($this->input->post('kelas', true));
+        $raw_kelas = $this->input->post('kelas', true);
+        $rows_kelas = is_array($raw_kelas) ? array_values($raw_kelas) : [];
         $kelas = [];
-        for ($i = 0; $i <= $rows; $i++) {
-            $kelas[] = [
-                'kelas_id' => $this->input->post('kelas['.$i.']', true)
-            ];
+        foreach ($rows_kelas as $k_id) {
+            if (!empty($k_id)) {
+                $kelas[] = [
+                    'kelas_id' => $k_id
+                ];
+            }
         }
         $jumlah = serialize($kelas);
         $data = array(

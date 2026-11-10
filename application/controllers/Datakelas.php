@@ -163,16 +163,31 @@ class Datakelas extends CI_Controller {
 
 	public function save() {
 		$id = $this->input->post('id_kelas', true);
-        $guru_id = $this->input->post('guru_id', TRUE);
-		$id_tp = $this->master->getTahunActive()->id_tp;
-		$id_smt = $this->master->getSemesterActive()->id_smt;
-        $siswas = $this->input->post('siswa', true);
+        $raw_guru = $this->input->post('guru_id', TRUE);
+        $guru_id = (!empty($raw_guru)) ? (int)$raw_guru : null;
+        
+        $active_tp = $this->master->getTahunActive();
+		$id_tp = $active_tp ? $active_tp->id_tp : 1;
+        $active_smt = $this->master->getSemesterActive();
+		$id_smt = $active_smt ? $active_smt->id_smt : 1;
+        
+        $raw_siswas = $this->input->post('siswa', true);
+        $siswas = is_array($raw_siswas) ? array_values($raw_siswas) : [];
+
+        $raw_jurusan = $this->input->post('jurusan_id', TRUE);
+        $jurusan_id = (!empty($raw_jurusan) || $raw_jurusan === '0' || $raw_jurusan === 0) ? (int)$raw_jurusan : 0;
+
+        $raw_siswa = $this->input->post('siswa_id', TRUE);
+        $siswa_id = (!empty($raw_siswa)) ? (int)$raw_siswa : null;
+
+        $level_id = $this->input->post('level_id', TRUE);
+        $level_id = (!empty($level_id)) ? (int)$level_id : 1;
 
 		$config = array(
 			array(
 				'field' => 'nama_kelas',
 				'label' => 'Nama Kelas',
-				'rules' => 'trim'
+				'rules' => 'trim|required'
 			),
             array(
                 'field' => 'kode_kelas',
@@ -180,131 +195,113 @@ class Datakelas extends CI_Controller {
                 'rules' => 'trim'
             ),
 			array(
-				'field' => 'jurusan_id',
-				'label' => 'Jurusan',
-				'rules' => 'trim'
-			),
-			array(
 				'field' => 'level_id',
 				'label' => 'Level',
-				'rules' => 'trim'
-			),
-			array(
-				'field' => 'guru_id',
-				'label' => 'Guru',
-				'rules' => 'trim'
-			),
-			array(
-				'field' => 'siswa_id',
-				'label' => 'Siswa',
 				'rules' => 'trim'
 			)
 		);
 
         $siswakelas = [];
-        for ($i = 0; $i <= count($siswas); $i++) {
-            $id_siswa = isset($siswas[$i]) ? $siswas[$i] : null;
-            if ($id_siswa!=null) {
-                array_push($siswakelas, ['id' => $id_siswa]);
+        foreach ($siswas as $id_s) {
+            if (!empty($id_s)) {
+                $siswakelas[] = ['id' => $id_s];
             }
         }
         $jumlah = serialize($siswakelas);
         $insert = array(
             'nama_kelas' => $this->input->post('nama_kelas', TRUE),
             'kode_kelas' => $this->input->post('kode_kelas', TRUE),
-            'jurusan_id' => $this->input->post('jurusan_id', TRUE),
+            'jurusan_id' => $jurusan_id,
             'id_tp' => $id_tp,
             'id_smt' => $id_smt,
-            'level_id' => $this->input->post('level_id', TRUE),
-            'guru_id' => $this->input->post('guru_id', TRUE) ?? '',
-            'siswa_id' => $this->input->post('siswa_id', TRUE),
+            'level_id' => $level_id,
+            'guru_id' => $guru_id,
+            'siswa_id' => $siswa_id,
             'jumlah_siswa' => $jumlah
         );
 
         $id_new = null;
-        if ($id != null && $id != '') {
-            $this->form_validation->set_rules($config);
-            if ($this->form_validation->run() == TRUE) {
+        $this->form_validation->set_rules($config);
+        if ($this->form_validation->run() == TRUE) {
+            if ($id != null && $id != '') {
                 $this->db->where('id_kelas', $id);
                 $status = $this->db->update('master_kelas', $insert);
             } else {
-                $status = FALSE;
-            }
-		} else {
-            $this->form_validation->set_rules($config);
-            if ($this->form_validation->run() == TRUE) {
                 $status = $this->db->insert('master_kelas', $insert);
                 $id_new = $this->db->insert_id();
-            } else {
-                $status = FALSE;
             }
-		}
+        } else {
+            $status = FALSE;
+        }
 
 		$updated = false;
         $siswa_inserted = 0;
+        $target_id_kelas = (!empty($id)) ? $id : $id_new;
+
         $this->db->query('SET FOREIGN_KEY_CHECKS=0');
-		if ($status) {
-            $this->db->set('id_kelas', $id);
-            $this->db->where('id_jabatan_guru', $guru_id.$id_tp.$id_smt);
-            $updated = $this->db->update('jabatan_guru');
-            if ($updated) {
-                $insert = [];
-                if ($id != null && $id != '') {
-                    $siswa_kelas = $this->kelas->get_status_siswa_kelas($id, $id_tp, $id_smt);
-                    if (count($siswa_kelas) > 0) {
-                        foreach ($siswa_kelas as $id_siswa=>$sis) {
-                            $insert[$id_tp . $id_smt . $id_siswa] = [
-                                'id_kelas_siswa' => $id_tp . $id_smt . $id_siswa,
-                                'id_tp' => $id_tp,
-                                'id_smt' => $id_smt,
-                                'id_kelas' => 0,
-                                'id_siswa' => $id_siswa,
-                            ];
-                        }
-                    }
-                }
-
-                for ($i = 0; $i <= count($siswas); $i++) {
-                    $idsiswa = isset($siswas[$i]) ? $siswas[$i] : null;
-                    $new_id_kelas = $id != null && $id != '' ? $id : $id_new;
-                    if ($idsiswa!=null) {
-                        if (isset($insert[$id_tp . $id_smt . $idsiswa])) {
-                            $insert[$id_tp . $id_smt . $idsiswa]['id_kelas'] = $new_id_kelas;
-                        } else {
-                            $insert[$id_tp . $id_smt . $idsiswa] = [
-                                'id_kelas_siswa' => $id_tp . $id_smt . $idsiswa,
-                                'id_tp' => $id_tp,
-                                'id_smt' => $id_smt,
-                                'id_kelas' => $new_id_kelas,
-                                'id_siswa' => $idsiswa,
-                            ];
-                        }
-                    }
-                }
-
-                foreach ($insert as $ins) {
-                    if ($this->db->replace('kelas_siswa', $ins)) {
-                        $siswa_inserted ++;
-                    };
-                }
-                $data['insert'] = $insert;
+		if ($status && !empty($target_id_kelas)) {
+            if (!empty($guru_id)) {
+                $this->db->set('id_kelas', $target_id_kelas);
+                $this->db->where('id_jabatan_guru', $guru_id . $id_tp . $id_smt);
+                $updated = $this->db->update('jabatan_guru');
             }
+
+            $insert_siswa = [];
+            if ($id != null && $id != '') {
+                $siswa_kelas = $this->kelas->get_status_siswa_kelas($id, $id_tp, $id_smt);
+                if (is_array($siswa_kelas) && count($siswa_kelas) > 0) {
+                    foreach ($siswa_kelas as $id_siswa => $sis) {
+                        $insert_siswa[$id_tp . $id_smt . $id_siswa] = [
+                            'id_kelas_siswa' => $id_tp . $id_smt . $id_siswa,
+                            'id_tp' => $id_tp,
+                            'id_smt' => $id_smt,
+                            'id_kelas' => 0,
+                            'id_siswa' => $id_siswa,
+                        ];
+                    }
+                }
+            }
+
+            foreach ($siswas as $idsiswa) {
+                if (!empty($idsiswa)) {
+                    if (isset($insert_siswa[$id_tp . $id_smt . $idsiswa])) {
+                        $insert_siswa[$id_tp . $id_smt . $idsiswa]['id_kelas'] = $target_id_kelas;
+                    } else {
+                        $insert_siswa[$id_tp . $id_smt . $idsiswa] = [
+                            'id_kelas_siswa' => $id_tp . $id_smt . $idsiswa,
+                            'id_tp' => $id_tp,
+                            'id_smt' => $id_smt,
+                            'id_kelas' => $target_id_kelas,
+                            'id_siswa' => $idsiswa,
+                        ];
+                    }
+                }
+            }
+
+            foreach ($insert_siswa as $ins) {
+                if ($this->db->replace('kelas_siswa', $ins)) {
+                    $siswa_inserted++;
+                }
+            }
+            $data['insert'] = $insert_siswa;
         }
         $this->db->query('SET FOREIGN_KEY_CHECKS = 1');
 
         $data['siswa'] = $siswa_inserted;
         $data['update'] = $updated;
-		$data['status'] = $status;
+		$data['status'] = (bool)$status;
 		$this->output_json($data);
 	}
 
 	public function update_kelas($id) {
-		$id_tp = $this->master->getTahunActive()->id_tp;
-		$id_smt = $this->master->getSemesterActive()->id_smt;
+        $active_tp = $this->master->getTahunActive();
+		$id_tp = $active_tp ? $active_tp->id_tp : 1;
+        $active_smt = $this->master->getSemesterActive();
+		$id_smt = $active_smt ? $active_smt->id_smt : 1;
         $siswakelas = $this->kelas->get_status_siswa_kelas($id, $id_tp, $id_smt);
 
-        if (count($siswakelas) > 0) {
-            foreach ($siswakelas as $id_siswa=>$sis) {
+        if (is_array($siswakelas) && count($siswakelas) > 0) {
+            foreach ($siswakelas as $id_siswa => $sis) {
                 $insert = [
                     'id_kelas_siswa' => $id_tp . $id_smt . $id_siswa,
                     'id_tp' => $id_tp,
@@ -316,11 +313,11 @@ class Datakelas extends CI_Controller {
             }
         }
 
-		$rowsSelect = count($this->input->post('siswa', true));
-		for ($i = 0; $i <= $rowsSelect; $i++) {
-			$id_siswa = $this->input->post('siswa['.$i.']', true);
-
-			if ($id_siswa!=null) {
+        $raw_siswa = $this->input->post('siswa', true);
+        $siswas = is_array($raw_siswa) ? array_values($raw_siswa) : [];
+		for ($i = 0; $i < count($siswas); $i++) {
+			$id_siswa = $siswas[$i];
+			if (!empty($id_siswa)) {
 				$insert = [
 					'id_kelas_siswa' => $id_tp . $id_smt . $id_siswa,
 					'id_tp' => $id_tp,

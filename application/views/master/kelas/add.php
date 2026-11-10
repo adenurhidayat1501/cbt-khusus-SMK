@@ -98,6 +98,8 @@
                                         ?>
                                     </div>
                                 </div>
+                            <?php else : ?>
+                                <input type="hidden" name="jurusan_id" id="jurusan_id" value="0">
                             <?php endif; ?>
                         </div>
                         <div class="col-md-6">
@@ -139,7 +141,7 @@
                                     <div class="form-group row">
                                         <label for="jumlah_siswa" class="col-md-12 control-label">Daftar Siswa</label>
                                         <div class="col-md-12">
-                                            <select name="siswa[]" class="form-control" id="jumlah_siswa" multiple="multiple" required="" style="position: absolute; left: -9999px;">
+                                            <select name="siswa[]" class="form-control" id="jumlah_siswa" multiple="multiple" style="position: absolute; left: -9999px;">
                                             <?php foreach ($siswas as $id=>$siswa) :?>
                                             <option value="<?= $id ?>" <?= in_array($id, $jjs) ? 'selected="selected"' : '';?>><?=$siswa?></option>
                                             <?php endforeach; ?>
@@ -159,7 +161,7 @@
                                             'siswa_id',
                                             $siswas,
                                             $kelas->siswa_id,
-                                            'class="select2 form-control" id="siswa_id" required'
+                                            'class="select2 form-control" id="siswa_id"'
                                         );
                                         ?>
                                     </div>

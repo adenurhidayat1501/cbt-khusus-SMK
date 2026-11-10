@@ -379,7 +379,11 @@
                 dataType: "JSON",
                 data: $(this).serialize(),
                 success: function (data) {
-                    location.href = base_url + 'datatahun';
+                    if (data && data.status) {
+                        location.href = base_url + 'datatahun';
+                    } else {
+                        showDangerToast(data && data.message ? data.message : 'Gagal menambah tahun pelajaran');
+                    }
                 }, error: function (xhr, status, error) {
                     $('#createTahunModal').modal('hide').data('bs.modal', null);
                     $('#createTahunModal').on('hidden', function () {

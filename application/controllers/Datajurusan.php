@@ -65,10 +65,13 @@ class Datajurusan extends CI_Controller
 	public function add() {
         $mapels = [];
         $check_mapel = $this->input->post('mapel', true);
-        if ($check_mapel) {
-            $row_mapels = count($this->input->post('mapel', true));
-            for ($i = 0; $i <= $row_mapels; $i++) {
-                array_push($mapels, $this->input->post('mapel[' . $i . ']', true));
+        if ($check_mapel && is_array($check_mapel)) {
+            $row_mapels = count($check_mapel);
+            for ($i = 0; $i < $row_mapels; $i++) {
+                $val = $this->input->post('mapel[' . $i . ']', true);
+                if ($val !== null && $val !== '') {
+                    array_push($mapels, $val);
+                }
             }
         }
 		$insert = [
@@ -115,7 +118,8 @@ class Datajurusan extends CI_Controller
 
 	public function save()
 	{
-		$rows = count($this->input->post('nama_jurusan', true));
+		$raw_nama = $this->input->post('nama_jurusan', true);
+		$rows = (is_array($raw_nama)) ? count($raw_nama) : 0;
 		$mode = $this->input->post('mode', true);
 		for ($i = 1; $i <= $rows; $i++) {
 			$nama_jurusan = 'nama_jurusan[' . $i . ']';
@@ -161,7 +165,7 @@ class Datajurusan extends CI_Controller
 
     public function update() {
         $data = $this->master->updateJurusan();
-        $this->output->set_content_type('application/json')->set_output($data);
+        $this->output_json(['status' => (bool)$data]);
     }
 
 	public function delete() {
@@ -344,7 +348,7 @@ class Datajurusan extends CI_Controller
 		}
 
 		$save = $this->master->create('master_jurusan', $jurusan, true);
-        $this->output->set_content_type('application/json')->set_output($save);
+        $this->output_json(['status' => (bool)$save]);
 	}
 
     function updateById()

@@ -828,18 +828,37 @@ class Dataalumni extends CI_Controller {
     }
 
     public function do_import() {
-        $input = json_decode($this->input->post('alumni', true));
-        $this->db->trans_start();
-        foreach ($input as $key1=>$val1) {
-            $data = [];
-            foreach(((array)$input)[$key1] as $key=>$val) {
-                $data[$key] = $val;
+        $raw_input = $this->input->post('alumni', true);
+        $input = is_string($raw_input) ? json_decode($raw_input) : $raw_input;
+        $save = false;
+
+        if (is_array($input) || is_object($input)) {
+            $this->db->trans_start();
+            foreach ($input as $row) {
+                $row_arr = (array)$row;
+                $nis = $row_arr['nis'] ?? '';
+                $nama = $row_arr['nama'] ?? ($row_arr['namasiswa'] ?? '');
+                $jk = $row_arr['jenis_kelamin'] ?? ($row_arr['jeniskelamin'] ?? 'L');
+                $kelas = $row_arr['kelas_awal'] ?? ($row_arr['kelasawal'] ?? 1);
+                $user = $row_arr['username'] ?? $nis;
+                $pass = $row_arr['password'] ?? $nis;
+
+                $data = [
+                    'nis'           => $nis,
+                    'nisn'          => $row_arr['nisn'] ?? $nis,
+                    'nama'          => $nama,
+                    'jenis_kelamin' => $jk,
+                    'username'      => $user,
+                    'password'      => $pass,
+                    'kelas_awal'    => $kelas,
+                    'foto'          => 'uploads/foto_siswa/' . $nis . '.jpg'
+                ];
+                $this->db->set('uid', 'UUID()', FALSE);
+                $save = $this->db->insert('master_siswa', $data);
             }
-            $data['foto'] = 'uploads/foto_siswa/'.$data['nis'].'.jpg';
-            $save = $this->db->insert('master_siswa', $data);
+            $this->db->trans_complete();
         }
-        $this->db->trans_complete();
-        $this->output->set_content_type('application/json')->set_output($save);
+        $this->output_json(['status' => (bool)$save]);
     }
 
     public function editKelulusan() {

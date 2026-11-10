@@ -70,7 +70,7 @@
                                 </div>
                                 <div class="col-10">
                                     <select id="opsi-kepada" name="kepada[]" class="select2 form-control"
-                                            multiple="multiple" required>
+                                            multiple="multiple">
                                         <option value='guru'>Semua Guru</option>
                                         <option value='siswa'>Semua Siswa</option>
                                         <?php foreach ($kelas as $key => $value) : ?>

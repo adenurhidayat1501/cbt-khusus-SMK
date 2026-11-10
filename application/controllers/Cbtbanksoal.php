@@ -251,13 +251,18 @@ class Cbtbanksoal extends CI_Controller {
 		$mapel_guru = $this->kelas->getGuruMapelKelas($id_guru, $tp->id_tp, $smt->id_smt);
         $arrKelas = [];
         $arrMapel = [];
-        $mapel = json_decode(json_encode(unserialize($mapel_guru->mapel_kelas ?? '')));
-        if ($mapel !== false) {
+        $raw_mapel = ($mapel_guru && !empty($mapel_guru->mapel_kelas)) ? @unserialize($mapel_guru->mapel_kelas) : null;
+        $mapel = is_array($raw_mapel) || is_object($raw_mapel) ? json_decode(json_encode($raw_mapel)) : null;
+        if (is_array($mapel) || is_object($mapel)) {
             foreach ($mapel as $m) {
-                $arrMapel[$m->id_mapel] = $m->nama_mapel;
-                if ($id_mapel===$m->id_mapel){
-                    foreach ($m->kelas_mapel as $kls) {
-                        array_push($arrKelas, $kls->kelas);
+                if (isset($m->id_mapel)) {
+                    $arrMapel[$m->id_mapel] = $m->nama_mapel ?? '';
+                    if ($id_mapel === $m->id_mapel && isset($m->kelas_mapel) && is_array($m->kelas_mapel)) {
+                        foreach ($m->kelas_mapel as $kls) {
+                            if (isset($kls->kelas)) {
+                                array_push($arrKelas, $kls->kelas);
+                            }
+                        }
                     }
                 }
             }
@@ -1074,11 +1079,15 @@ class Cbtbanksoal extends CI_Controller {
             $data['opsi_a'] = serialize($opsis);
 
             $jawabans = [];
-            $jwb_pg2 = count($this->input->post('jawaban_benar_pg2', true));
-            for ($i = 0; $i <= $jwb_pg2; $i++) {
-                $jwb = $this->input->post('jawaban_benar_pg2['.$i.']', true);
-                //if ($id!=null) array_push($arrId, $id);
-                array_push($jawabans, $jwb);
+            $raw_pg2 = $this->input->post('jawaban_benar_pg2', true);
+            if (is_array($raw_pg2)) {
+                $jwb_pg2 = count($raw_pg2);
+                for ($i = 0; $i < $jwb_pg2; $i++) {
+                    $jwb = $this->input->post('jawaban_benar_pg2['.$i.']', true);
+                    if ($jwb !== null && $jwb !== '') {
+                        array_push($jawabans, $jwb);
+                    }
+                }
             }
             $data['jawaban'] = serialize($jawabans);
         } elseif ($jenis == 3) {

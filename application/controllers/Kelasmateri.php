@@ -481,24 +481,30 @@ class Kelasmateri extends CI_Controller {
     public function saveMateri() {
         $jenis = $this->input->post('jenis', true);
 		$id_materi = $this->input->post('id_materi', true);
-		$kelas = count($this->input->post('kelas', true));
-		$attach = json_decode($this->input->post('attach', true));
+		$raw_kelas = $this->input->post('kelas', true);
+		$kelas_arr = is_array($raw_kelas) ? array_values($raw_kelas) : [];
+		$raw_attach = $this->input->post('attach', true);
+		$attach = is_string($raw_attach) ? json_decode($raw_attach) : $raw_attach;
 
 		$src_file = [];
-		foreach ($attach as $at) {
-			if ($at->name != null) {
-				$src_file[] = [
-					'src' => $at->src,
-					'size' => $at->size,
-					'type' => $at->type,
-					'name' => $at->name
-				];
+		if (is_array($attach) || is_object($attach)) {
+			foreach ($attach as $at) {
+				if (!empty($at->name)) {
+					$src_file[] = [
+						'src' => $at->src ?? '',
+						'size' => $at->size ?? 0,
+						'type' => $at->type ?? '',
+						'name' => $at->name ?? ''
+					];
+				}
 			}
 		}
 
 		$id_kelas = [];
-		for ($i = 0; $i < $kelas; $i++) {
-			$id_kelas[] = $this->input->post('kelas[' . $i . ']', true);
+		foreach ($kelas_arr as $kls_val) {
+			if (!empty($kls_val)) {
+				$id_kelas[] = $kls_val;
+			}
 		}
 
 		$isi_materi = $this->input->post('isi_materi', false);

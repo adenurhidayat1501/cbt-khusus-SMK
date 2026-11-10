@@ -366,26 +366,29 @@ class Dashboard extends CI_Controller {
 
     public function gantiTahun() {
         $aktif = $this->input->post('active', true);
-        $rows = count($this->input->post('tahun', true));
+        $tahuns = $this->input->post('tahun', true);
+        $update = [];
 
-        for ($i = 0; $i <= $rows; $i++) {
-            $id_tp = $this->input->post('id_tp[' . $i . ']', true);
-            $tahun = $this->input->post('tahun[' . $i . ']', true);
+        if (is_array($tahuns)) {
+            $rows = count($tahuns);
+            for ($i = 0; $i < $rows; $i++) {
+                $id_tp = $this->input->post('id_tp[' . $i . ']', true);
+                $tahun = $this->input->post('tahun[' . $i . ']', true);
 
-            if ($id_tp === $aktif) {
-                $active = 1;
-            } else {
-                $active = 0;
+                if ($id_tp !== null && $id_tp !== '') {
+                    $active = ($id_tp === $aktif) ? 1 : 0;
+                    $update[] = array(
+                        'id_tp'     => $id_tp,
+                        'tahun' 	=> $tahun,
+                        'active'    => $active
+                    );
+                }
             }
-
-            $update[] = array(
-                'id_tp'     => $id_tp,
-                'tahun' 	=> $tahun,
-                'active'    => $active
-            );
         }
 
-        $this->dashboard->update('master_tp', $update, 'id_tp', null, true);
+        if (count($update) > 0) {
+            $this->dashboard->update('master_tp', $update, 'id_tp', null, true);
+        }
         $data['update'] = $update;
         $data['status'] = true;
 		$this->logging->saveLog(4, 'mengganti tahun ajaran aktif');
@@ -394,26 +397,32 @@ class Dashboard extends CI_Controller {
 
     public function gantiSemester() {
         $aktif = $this->input->post('active', true);
-        $rows = count($this->input->post('smt', true));
+        $smts = $this->input->post('smt', true);
+        $update = [];
 
-        for ($i = 1; $i <= $rows; $i++) {
-            $id_smt = $this->input->post('id_smt[' . $i . ']', true);
-            $smt = $this->input->post('smt[' . $i . ']', true);
+        if (is_array($smts)) {
+            $rows = count($smts);
+            // Form can be 0-indexed or 1-indexed, handle both
+            $start = isset($smts[0]) ? 0 : 1;
+            $end = isset($smts[0]) ? $rows : ($rows + 1);
+            for ($i = $start; $i < $end; $i++) {
+                $id_smt = $this->input->post('id_smt[' . $i . ']', true);
+                $smt = $this->input->post('smt[' . $i . ']', true);
 
-            if ($id_smt === $aktif) {
-                $active = 1;
-            } else {
-                $active = 0;
+                if ($id_smt !== null && $id_smt !== '') {
+                    $active = ($id_smt === $aktif) ? 1 : 0;
+                    $update[] = array(
+                        'id_smt'    => $id_smt,
+                        'smt'       => $smt,
+                        'active'    => $active
+                    );
+                }
             }
-
-            $update[] = array(
-                'id_smt'    => $id_smt,
-                'smt'       => $smt,
-                'active'    => $active
-            );
         }
 
-        $this->dashboard->update('master_smt', $update, 'id_smt', null, true);
+        if (count($update) > 0) {
+            $this->dashboard->update('master_smt', $update, 'id_smt', null, true);
+        }
         $data['update'] = $update;
         $data['status'] = true;
         $this->logging->saveLog(4, 'mengganti semester aktif');

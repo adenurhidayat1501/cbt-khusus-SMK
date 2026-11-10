@@ -318,13 +318,15 @@
     {
 
       $mColArray = $this->ci->input->post('columns');
+      if (!is_array($mColArray)) $mColArray = [];
 
       $sWhere = '';
       $search = $this->ci->input->post('search');
-      $sSearch = $this->ci->db->escape_like_str(trim($search['value'] ?? ''));
+      $searchValue = (is_array($search) && isset($search['value'])) ? $search['value'] : '';
+      $sSearch = $this->ci->db->escape_like_str(trim((string)$searchValue));
       $columns = array_values(array_diff($this->columns, $this->unset_columns));
 
-      if($sSearch != '')
+      if($sSearch != '' && count($mColArray) > 0)
         for($i = 0; $i < count($mColArray); $i++)
           if ($mColArray[$i]['searchable'] == 'true' && !array_key_exists($mColArray[$i]['data'], $this->add_columns))
             if($this->check_cType())
@@ -509,7 +511,7 @@
     private function check_cType()
     {
       $column = $this->ci->input->post('columns');
-      if(is_numeric(isset($column[0]) && isset($column[0]['data']) ? $column[0]['data'] : ''))
+      if(is_array($column) && isset($column[0]) && is_array($column[0]) && isset($column[0]['data']) && is_numeric($column[0]['data']))
         return FALSE;
       else
         return TRUE;

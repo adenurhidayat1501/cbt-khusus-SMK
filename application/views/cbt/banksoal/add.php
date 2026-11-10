@@ -88,8 +88,7 @@ $kelasSelected = json_encode(unserialize($bank->bank_kelas ?? ''));
                             <div class="form-group">
                                 <label>Pilih Kelas</label><br>
                                 <select name="kelas[]" id="select-kelas"
-                                        class="select2 form-control form-control-sm" multiple="multiple"
-                                        required=""></select>
+                                        class="select2 form-control form-control-sm" multiple="multiple"></select>
                             </div>
                         </div>
                     </div>

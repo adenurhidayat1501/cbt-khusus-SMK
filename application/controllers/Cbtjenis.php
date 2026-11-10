@@ -65,7 +65,7 @@ class Cbtjenis extends CI_Controller {
 	public function update() {
         $this->load->model('Cbt_model', 'cbt');
 		$data = $this->cbt->updateJenis();
-		$this->output->set_content_type('application/json')->set_output($data);
+		$this->output_json(['status' => (bool)$data]);
 	}
 
 	public function delete() {

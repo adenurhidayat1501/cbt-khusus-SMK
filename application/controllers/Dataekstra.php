@@ -64,7 +64,7 @@ class Dataekstra extends CI_Controller
 			"kode_ekstra" => $this->input->post('kode_ekstra', true)
 		];
 		$data = $this->master->create('master_ekstra', $insert);
-		$this->output->set_content_type('application/json')->set_output($data);
+		$this->output_json(['status' => (bool)$data]);
 	}
 
 	public function read() {
@@ -75,7 +75,7 @@ class Dataekstra extends CI_Controller
 
 	public function update() {
 		$data = $this->master->updateEkstra();
-		$this->output->set_content_type('application/json')->set_output($data);
+		$this->output_json(['status' => (bool)$data]);
 	}
 
 	public function delete($id) {
@@ -122,14 +122,16 @@ class Dataekstra extends CI_Controller
         $update = [];
         foreach ($check_kelas as $key=>$kls) {
             $check_ekskul = $this->input->post("ekskul".$kls->kls_id, true);
-            if ($check_ekskul) {
-                $row_ekskul = count($this->input->post("ekskul".$kls->kls_id, true));
+            if ($check_ekskul && is_array($check_ekskul)) {
+                $row_ekskul = count($check_ekskul);
                 $ekstra = [];
-                for ($j = 0; $j <= $row_ekskul; $j++) {
+                for ($j = 0; $j < $row_ekskul; $j++) {
                     $kelaseks = $this->input->post('ekskul'.$kls->kls_id.'[' . $j . ']', true);
-                    $ekstra[] = [
-                        'ekstra' => $kelaseks
-                    ];
+                    if ($kelaseks !== null && $kelaseks !== '') {
+                        $ekstra[] = [
+                            'ekstra' => $kelaseks
+                        ];
+                    }
                 }
 
                 $ekstras = [

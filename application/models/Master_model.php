@@ -102,10 +102,13 @@ class Master_model extends CI_Model {
 
         $mapels = [];
         $check_mapel = $this->input->post('mapel', true);
-        if ($check_mapel) {
-            $row_mapels = count($this->input->post('mapel', true));
-            for ($i = 0; $i <= $row_mapels; $i++) {
-                array_push($mapels, $this->input->post('mapel[' . $i . ']', true));
+        if ($check_mapel && is_array($check_mapel)) {
+            $row_mapels = count($check_mapel);
+            for ($i = 0; $i < $row_mapels; $i++) {
+                $val = $this->input->post('mapel[' . $i . ']', true);
+                if ($val !== null && $val !== '') {
+                    array_push($mapels, $val);
+                }
             }
         }
 
@@ -748,6 +751,16 @@ class Master_model extends CI_Model {
         $this->db->from('master_tp');
         $this->db->where('active', 1);
         $result = $this->db->get()->row();
+        if ($result == null) {
+            $this->db->select('id_tp, tahun');
+            $this->db->from('master_tp');
+            $this->db->order_by('id_tp', 'DESC');
+            $this->db->limit(1);
+            $result = $this->db->get()->row();
+        }
+        if ($result == null) {
+            $result = (object)['id_tp' => 1, 'tahun' => date('Y') . '/' . (date('Y') + 1)];
+        }
         return $result;
     }
 
@@ -756,6 +769,16 @@ class Master_model extends CI_Model {
         $this->db->from('master_smt');
         $this->db->where('active', 1);
         $result = $this->db->get()->row();
+        if ($result == null) {
+            $this->db->select('id_smt, nama_smt, smt');
+            $this->db->from('master_smt');
+            $this->db->order_by('id_smt', 'ASC');
+            $this->db->limit(1);
+            $result = $this->db->get()->row();
+        }
+        if ($result == null) {
+            $result = (object)['id_smt' => 1, 'nama_smt' => 'Semester Ganjil', 'smt' => '1'];
+        }
         return $result;
     }
 
