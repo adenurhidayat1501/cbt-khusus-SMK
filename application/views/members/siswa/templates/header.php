@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title><?= $judul ?></title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <?php $logo_app = (isset($setting->logo_kiri) && !empty($setting->logo_kiri)) ? base_url() . $setting->logo_kiri : base_url('assets/img/saduci_logo.png'); ?>
+    <?php $logo_app = (isset($setting->logo_kiri) && !empty($setting->logo_kiri)) ? base_url() . $setting->logo_kiri : base_url('assets/img/necis_logo.png'); ?>
     <link rel="shortcut icon" href="<?= $logo_app ?>" type="image/png">
 
     <!-- Required CSS -->
@@ -182,7 +182,7 @@ $display_logout = $this->uri->segment(2) == "penilaian" ? 'd-none' : '';
     </nav>
 
     <script type="text/javascript">
-        const isLogin = localStorage.getItem('saduciCBT.login') || localStorage.getItem('garudaCBT.login')
+        const isLogin = localStorage.getItem('necisCBT.login') || localStorage.getItem('saduciCBT.login') || localStorage.getItem('garudaCBT.login')
         const isCbtMode = isLogin ? isLogin === '1' : false
         if (isCbtMode) {
             $("a#url-back").attr("href", base_url + 'siswa/cbt');

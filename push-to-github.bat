@@ -1,6 +1,6 @@
-@echo off
+﻿@echo off
 setlocal enabledelayedexpansion
-title SADUCI CBT - Push to GitHub Helper
+title Necis CBT by Dado - Push to GitHub Helper
 
 cd /d "%~dp0"
 if exist "cbt-sekolah-main\index.php" (
@@ -11,8 +11,8 @@ if exist "main\index.php" (
 )
 
 echo ======================================================================
-echo          SADUCI CBT - PUSH TO GITHUB AUTOMATION HELPER                
-echo              SMP NEGERI SATU ATAP 2 CIPATUJAH                         
+echo          Necis CBT by Dado - PUSH TO GITHUB AUTOMATION HELPER                
+echo              SMK NEGERI CIPATUJAH                         
 echo ======================================================================
 echo.
 
@@ -51,8 +51,8 @@ echo.
 git config --global user.name >nul 2>nul
 if %errorlevel% neq 0 (
     echo [*] Mengatur identitas Git user.name & user.email...
-    git config --global user.name "SMPN Satu Atap 2 Cipatujah"
-    git config --global user.email "admin@saduci.sch.id"
+    git config --global user.name "SMK Negeri Cipatujah"
+    git config --global user.email "admin@smkncipatujah.sch.id"
 )
 git config core.autocrlf false >nul 2>nul
 
@@ -79,7 +79,7 @@ echo [*] Menambahkan berkas ke Git (git add .)...
 git add .
 
 echo [*] Membuat commit...
-git commit -m "SADUCI CBT - SMP Negeri Satu Atap 2 Cipatujah" >nul 2>&1
+git commit -m "Necis CBT by Dado - SMK NEGERI CIPATUJAH" >nul 2>&1
 if %errorlevel% equ 0 (
     echo [OK] Commit berhasil dibuat.
 ) else (
@@ -131,12 +131,12 @@ exit /b 1
 :SUCCESS
 echo.
 echo ======================================================================
-echo [SUKSES] Source code SADUCI CBT berhasil di-upload ke GitHub!
+echo [SUKSES] Source code Necis CBT by Dado berhasil di-upload ke GitHub!
 echo.
 echo Sekarang untuk install di VPS Anda, cukup jalankan di VPS (SSH):
 echo.
-echo    git clone %REPO_URL% /var/www/saduci_cbt
-echo    cd /var/www/saduci_cbt
+echo    git clone %REPO_URL% /var/www/necis_cbt
+echo    cd /var/www/necis_cbt
 echo    sudo bash install-vps.sh -y
 echo.
 echo ======================================================================

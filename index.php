@@ -41,7 +41,8 @@ define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : ($is_loca
 
 switch (ENVIRONMENT) {
     case 'development':
-        error_reporting(-1);
+        // Suppress E_DEPRECATED to maintain compatibility with PHP 8.1/8.2 and avoid corrupting AJAX JSON
+        error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED);
         ini_set('display_errors', 1);
         break;
     case 'testing':
@@ -57,6 +58,48 @@ switch (ENVIRONMENT) {
         header('HTTP/1.1 503 Service Unavailable.', TRUE, 503);
         echo 'The application environment is not set correctly.';
         exit(1); // EXIT_ERROR
+}
+
+// Auto-check if database is initialized; redirect to installer if unconfigured on localhost
+if (is_dir(__DIR__ . '/installer') && (!isset($_SERVER['REQUEST_URI']) || strpos($_SERVER['REQUEST_URI'], 'installer') === false)) {
+    $db_cfg = __DIR__ . '/application/config/database.php';
+    if (file_exists($db_cfg)) {
+        @include($db_cfg);
+        if (isset($db['default'])) {
+            $h = $db['default']['hostname'];
+            $u = $db['default']['username'];
+            $p = $db['default']['password'];
+            $d = $db['default']['database'];
+            
+            if (empty($d)) {
+                $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+                header("Location: " . ($base ? $base : '') . "/installer/");
+                exit;
+            } else {
+                $m = @new mysqli($h, $u, $p, $d);
+                if ($m->connect_errno) {
+                    // Check if MySQL server is running so we can redirect to web wizard
+                    $m2 = @new mysqli($h, $u, $p, '');
+                    if (!$m2->connect_errno) {
+                        $m2->close();
+                        $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+                        header("Location: " . ($base ? $base : '') . "/installer/");
+                        exit;
+                    }
+                } else {
+                    $chk = $m->query("SHOW TABLES LIKE 'users'");
+                    if (!$chk || $chk->num_rows == 0) {
+                        $m->close();
+                        $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+                        header("Location: " . ($base ? $base : '') . "/installer/");
+                        exit;
+                    }
+                    if ($chk) $chk->close();
+                    $m->close();
+                }
+            }
+        }
+    }
 }
 $system_path = 'system';
 $application_folder = 'application';

@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # ==============================================================================
-# SADUCI CBT - Push to GitHub Automation Helper (Linux / macOS / Git Bash)
-# SMP NEGERI SATU ATAP 2 CIPATUJAH
+# Necis CBT by Dado - Push to GitHub Automation Helper (Linux / macOS / Git Bash)
+# SMK NEGERI CIPATUJAH
 # ==============================================================================
 
 set -e
@@ -11,8 +11,8 @@ if [ -f "main/index.php" ]; then
 fi
 
 echo "======================================================================"
-echo "          SADUCI CBT - PUSH TO GITHUB AUTOMATION HELPER                "
-echo "              SMP NEGERI SATU ATAP 2 CIPATUJAH                         "
+echo "          Necis CBT by Dado - PUSH TO GITHUB AUTOMATION HELPER                "
+echo "              SMK NEGERI CIPATUJAH                         "
 echo "======================================================================"
 echo ""
 
@@ -34,7 +34,7 @@ if [ ! -d ".git" ]; then
 fi
 
 git add .
-git commit -m "SADUCI CBT - Rebranded for SMP Negeri Satu Atap 2 Cipatujah" || true
+git commit -m "Necis CBT by Dado - Rebranded for SMK NEGERI CIPATUJAH" || true
 git branch -M main
 
 git remote remove origin 2>/dev/null || true
@@ -46,10 +46,10 @@ git push -u origin main
 
 echo ""
 echo "======================================================================"
-echo "[SUKSES] Source code SADUCI CBT berhasil diunggah ke GitHub!"
+echo "[SUKSES] Source code Necis CBT by Dado berhasil diunggah ke GitHub!"
 echo "Untuk menginstall di VPS, jalankan di terminal VPS (SSH):"
 echo ""
-echo "   git clone $REPO_URL /var/www/saduci_cbt"
-echo "   cd /var/www/saduci_cbt"
+echo "   git clone $REPO_URL /var/www/necis_cbt"
+echo "   cd /var/www/necis_cbt"
 echo "   sudo bash install-vps.sh -y"
 echo "======================================================================"

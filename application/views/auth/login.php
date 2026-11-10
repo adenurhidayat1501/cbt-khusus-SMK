@@ -1,7 +1,7 @@
 <?php
-$logo_app = (isset($setting->logo_kanan) && !empty($setting->logo_kanan)) ? base_url() . $setting->logo_kanan : base_url('assets/img/saduci_logo.png');
-$app_title = (!empty($setting->nama_aplikasi)) ? $setting->nama_aplikasi : 'SADUCI CBT';
-$school_subtitle = (!empty($setting->sekolah)) ? $setting->sekolah : 'SMP NEGERI SATU ATAP 2 CIPATUJAH';
+$logo_app = (isset($setting->logo_kanan) && !empty($setting->logo_kanan)) ? base_url() . $setting->logo_kanan : base_url('assets/img/necis_logo.png');
+$app_title = (!empty($setting->nama_aplikasi)) ? $setting->nama_aplikasi : 'Necis CBT by Dado';
+$school_subtitle = (!empty($setting->sekolah)) ? $setting->sekolah : 'SMK NEGERI CIPATUJAH';
 ?>
 <div class="modern-login-wrapper">
     <div class="modern-login-card">
@@ -89,6 +89,7 @@ $school_subtitle = (!empty($setting->sekolah)) ? $setting->sekolah : 'SMP NEGERI
             const cbtOnly = arrForm.find(function (obj) {
                 return obj.name === 'cbt-only'
             })
+            localStorage.setItem('necisCBT.login', cbtOnly !== undefined ? '1' : '0')
             localStorage.setItem('saduciCBT.login', cbtOnly !== undefined ? '1' : '0')
             localStorage.setItem('garudaCBT.login', cbtOnly !== undefined ? '1' : '0')
 
@@ -103,7 +104,7 @@ $school_subtitle = (!empty($setting->sekolah)) ? $setting->sekolah : 'SMP NEGERI
                     if(data.status){
                         infobox.html('<div class="alert alert-success py-2 px-3 text-center mb-3"><i class="fas fa-check-circle mr-2"></i>Login berhasil! Mengalihkan...</div>');
 
-                        const isLogin = localStorage.getItem('saduciCBT.login') || localStorage.getItem('garudaCBT.login')
+                        const isLogin = localStorage.getItem('necisCBT.login') || localStorage.getItem('saduciCBT.login') || localStorage.getItem('garudaCBT.login')
                         const isCbtMode = isLogin ? isLogin === '1' : false
                         let go = base_url + data.url;
                         if (isCbtMode && data.role === 'siswa') {

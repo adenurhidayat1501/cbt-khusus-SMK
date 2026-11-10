@@ -20,8 +20,8 @@
     ?>
     <div class="container">
         <div class="align-content-center d-flex align-items-center">
-            <img class="mt-3 mb-3 mr-2" width="36" height="36" src="<?= base_url('assets/img/saduci_logo.png') ?>" alt="SADUCI Logo">
-            <span class="text-lg font-weight-bold">SADUCI CBT</span>
+            <img class="mt-3 mb-3 mr-2" width="36" height="36" src="<?= base_url('assets/img/necis_logo.png') ?>" alt="Necis CBT Logo">
+            <span class="text-lg font-weight-bold">Necis CBT by Dado</span>
         </div>
         <hr>
         <div class="row mb-3">

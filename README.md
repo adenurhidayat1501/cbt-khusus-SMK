@@ -1,18 +1,18 @@
-# SADUCI CBT - SMP Negeri Satu Atap 2 Cipatujah
+﻿# Necis CBT by Dado - SMK NEGERI CIPATUJAH
 
 [![PHP Version](https://img.shields.io/badge/PHP-7.4%20%7C%208.1-blue.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](license.txt)
 [![Security](https://img.shields.io/badge/Security-Hardened%20%26%20Patched-brightgreen.svg)]()
 [![UI/UX](https://img.shields.io/badge/UI%2FUX-ANBK%20Standard%202024--2026-blueviolet.svg)]()
 
-Aplikasi **SADUCI CBT (SMP Negeri Satu Atap 2 Cipatujah, Kab. Tasikmalaya)** berbasis Computer Based Test (CBT) yang telah dimodernisasi dengan antarmuka elegan berstandar **ANBK**, identitas sekolah lengkap, patch keamanan menyeluruh, serta skrip otomatisasi instalasi pada server VPS (Ubuntu/Debian) dan container Docker.
+Aplikasi **Necis CBT by Dado (SMK NEGERI CIPATUJAH, Kab. Tasikmalaya)** berbasis Computer Based Test (CBT) yang telah dimodernisasi dengan antarmuka elegan berstandar **ANBK**, identitas sekolah lengkap, patch keamanan menyeluruh, serta skrip otomatisasi instalasi pada server VPS (Ubuntu/Debian) dan container Docker.
 
 ---
 
 ## ✨ Fitur Unggulan
 
 1. **Antarmuka Modern (UI/UX 2024–2026)**
-   - **Identitas SADUCI CBT**: Dilengkapi logo resmi SMP Negeri Satu Atap 2 Cipatujah, badge institusi, dan favicon seragam.
+   - **Identitas Necis CBT by Dado**: Dilengkapi logo resmi SMK NEGERI CIPATUJAH, badge institusi, dan favicon seragam.
    - **ANBK Exam Interface**: Tampilan ujian siswa berstandar Asesmen Nasional dengan kartu pilihan interaktif (A, B, C, D, E), indikator sisa waktu digital, dan dok navigasi responsif.
    - **Glassmorphic Login**: Halaman login modern dengan efek kaca melayang (*frosted glass*), ikon interaktif, dan *show/hide password toggle*.
    - **Deep Slate Dashboard**: Sidebar dan navbar dashboard Admin & Guru bertema *Slate 900* (`#0f172a`), ramah di mata, serta dilengkapi widget statistik modern.
@@ -24,6 +24,50 @@ Aplikasi **SADUCI CBT (SMP Negeri Satu Atap 2 Cipatujah, Kab. Tasikmalaya)** ber
 3. **Penyebaran Otomatis di VPS & Cloud**
    - Skrip `install-vps.sh` untuk instalasi mandiri Apache, MariaDB, PHP, ekstensi, permissions, VirtualHost, dan database dalam 1 perintah.
    - Dukungan `docker-compose.yml` untuk instalasi berbasis container.
+
+---
+
+## 💻 Cara Cepat & Mudah Setup di Localhost (Windows)
+
+Aplikasi **Necis CBT by Dado** kini telah dilengkapi otomasi penuh untuk dijalankan di localhost dengan 3 opsi mudah:
+
+### Opsi 1: 1-Klik Otomatis Tanpa Ribet (`run-localhost.bat`) — *Paling Mudah!*
+1. Pastikan service MySQL di XAMPP atau Laragon Anda sudah menyala (**START**).
+2. Dobel-klik file **`run-localhost.bat`**.
+3. Script otomatis:
+   - Mendeteksi PHP dan MySQL di sistem/XAMPP/Laragon.
+   - Membuat database `necis_cbt` dan mengimpor data awal `master.sql` secara otomatis.
+   - Mengaktifkan server lokal di port `8080` dan langsung membuka browser ke `http://localhost:8080/`.
+
+---
+
+### Opsi 2: Menggunakan XAMPP / Laragon (Apache)
+1. Salin atau ekstrak folder proyek ini ke direktori web server Anda:
+   - **XAMPP**: `C:\xampp\htdocs\cbt`
+   - **Laragon**: `C:\laragon\www\cbt`
+2. Buka XAMPP/Laragon Control Panel, klik **START** pada modul **Apache** dan **MySQL**.
+3. Buka browser dan akses: `http://localhost/cbt/`
+4. Sistem akan otomatis mendeteksi status database:
+   - Jika belum terpasang, Anda langsung diarahkan ke **Web Wizard Installer** (`http://localhost/cbt/installer/`).
+   - Form database sudah **terisi otomatis** (`localhost`, `root`, password kosong, db `necis_cbt`).
+   - Cukup klik tombol **[INSTALL / UPDATE]**, dan aplikasi langsung siap digunakan!
+
+---
+
+### Opsi 3: Menggunakan Docker Desktop (Container)
+Jalankan di terminal/CMD:
+```bash
+docker compose up -d
+```
+Akses di browser: `http://localhost/`
+
+---
+
+### 🔑 Akun Login Default
+- **Administrator**:
+  - **Username**: `admin`
+  - **Password**: `admin`
+- **Guru & Siswa**: Dapat ditambahkan atau diimpor via Excel melalui Dashboard Administrator.
 
 ---
 
@@ -48,7 +92,7 @@ git init
 git add .
 
 # 3. Buat commit pertama
-git commit -m "SADUCI CBT - SMP Negeri Satu Atap 2 Cipatujah"
+git commit -m "Necis CBT by Dado - SMK NEGERI CIPATUJAH"
 
 # 4. Atur branch utama ke 'main'
 git branch -M main
@@ -72,10 +116,10 @@ Cukup login ke VPS Anda via SSH (sebagai `root`), lalu jalankan:
 
 ```bash
 # 1. Clone repository dari GitHub
-git clone https://github.com/adenurhidayat1501/cbt-sekolah.git /var/www/saduci_cbt
+git clone https://github.com/adenurhidayat1501/cbt-sekolah.git /var/www/necis_cbt
 
 # 2. Masuk ke direktori
-cd /var/www/saduci_cbt
+cd /var/www/necis_cbt
 
 # 3. Jalankan skrip instalasi otomatis (tambahkan -y untuk otomatis tanpa prompt)
 sudo bash install-vps.sh -y
@@ -89,10 +133,10 @@ sudo bash install-vps.sh -y
 > **Apa yang dikerjakan otomatis oleh skrip ini?**
 > - Mengupdate sistem dan memasang Apache2, MariaDB Server, PHP, dan Composer.
 > - Memasang seluruh ekstensi PHP yang dibutuhkan (`mysqli`, `gd`, `zip`, `mbstring`, `xml`, `curl`, `json`, `intl`).
-> - Membuat database `saduci_cbt` dan user MariaDB dengan password acak yang aman.
-> - Mengimpor skema tabel dan inisialisasi identitas SMP Negeri Satu Atap 2 Cipatujah.
+> - Membuat database `necis_cbt` dan user MariaDB dengan password acak yang aman.
+> - Mengimpor skema tabel dan inisialisasi identitas SMK NEGERI CIPATUJAH.
 > - Mengatur permission folder (`uploads/`, `backups/`, `logs/`).
-> - Mengaktifkan `mod_rewrite` dan membuat VirtualHost Apache (`saduci_cbt.conf`).
+> - Mengaktifkan `mod_rewrite` dan membuat VirtualHost Apache (`necis_cbt.conf`).
 > - Mengoptimalkan parameter `php.ini` (`upload_max_filesize = 128M`, `memory_limit = 512M`, `max_input_vars = 10000`).
 > - Opsi pemasangan gratis sertifikat SSL Let's Encrypt jika menggunakan domain.
 
@@ -104,8 +148,8 @@ Jika VPS Anda sudah terpasang Docker:
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/adenurhidayat1501/cbt-sekolah.git saduci_cbt
-cd saduci_cbt
+git clone https://github.com/adenurhidayat1501/cbt-sekolah.git necis_cbt
+cd necis_cbt
 
 # 2. Jalankan container di background
 docker-compose up -d
@@ -138,11 +182,11 @@ Setelah instalasi selesai, Anda dapat langsung login sebagai Administrator:
 │   └── views/             # Template UI modern (Login, Siswa CBT, AdminLTE)
 ├── assets/                # Aset statis CSS, JS, Gambar, Font
 │   ├── app/css/
-│   │   └── modern-cbt.css # Core Design System Modern SADUCI CBT
+│   │   └── modern-cbt.css # Core Design System Modern Necis CBT by Dado
 │   ├── app/db/
-│   │   └── master.sql     # Skema awal database & inisialisasi SADUCI CBT
+│   │   └── master.sql     # Skema awal database & inisialisasi Necis CBT by Dado
 │   └── img/
-│       └── saduci_logo.png# Logo resmi SMPN Satu Atap 2 Cipatujah
+│       └── necis_logo.png# Logo resmi SMK Negeri Cipatujah
 ├── backups/               # Direktori cadangan database (terlindungi .htaccess)
 ├── uploads/               # Direktori upload media & foto (terlindungi .htaccess)
 ├── install-vps.sh         # Script otomatis instalasi VPS Linux
@@ -159,8 +203,8 @@ Setelah instalasi selesai, Anda dapat langsung login sebagai Administrator:
 
 - **Restart Web Server**: `sudo systemctl restart apache2`
 - **Restart Database**: `sudo systemctl restart mariadb`
-- **Cek Log Error**: `sudo tail -f /var/log/apache2/saduci_cbt_error.log`
+- **Cek Log Error**: `sudo tail -f /var/log/apache2/necis_cbt_error.log`
 - **Backup Manual**: Jalankan backup database berkala melalui menu admin atau via CLI:
   ```bash
-  mysqldump -u saduci_cbt -p saduci_cbt > backup_$(date +%F).sql
+  mysqldump -u necis_cbt -p necis_cbt > backup_$(date +%F).sql
   ```

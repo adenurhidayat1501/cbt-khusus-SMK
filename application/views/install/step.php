@@ -5,11 +5,11 @@
                  data-aos="fade-up">
                 <div class="text-center text-lg-left">
                     <div class="mb-3 text-white d-flex align-items-center">
-                        <img style="width:70px; height:auto;" src="<?= base_url() ?>assets/img/saduci_logo.png" alt="SADUCI Logo">
-                        <span class="h1 align-bottom font-weight-bold ml-3 mb-0">SADUCI CBT</span>
+                        <img style="width:70px; height:auto;" src="<?= base_url() ?>assets/img/necis_logo.png" alt="Necis CBT Logo">
+                        <span class="h1 align-bottom font-weight-bold ml-3 mb-0">Necis CBT by Dado</span>
                     </div>
                     <div class="h3 text-white font-weight-bold">
-                        SMP NEGERI SATU ATAP 2 CIPATUJAH
+                        SMK NEGERI CIPATUJAH
                     </div>
                     <div class="text-white-50">
                         Sistem Penilaian & Ujian Berbasis Komputer

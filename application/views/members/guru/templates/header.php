@@ -9,7 +9,7 @@
     <title><?= $judul ?></title>
     <meta name="renderer" content="webkit"/>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" name="viewport">
-    <?php $logo_app = (isset($setting->logo_kiri) && !empty($setting->logo_kiri)) ? base_url() . $setting->logo_kiri : base_url('assets/img/saduci_logo.png'); ?>
+    <?php $logo_app = (isset($setting->logo_kiri) && !empty($setting->logo_kiri)) ? base_url() . $setting->logo_kiri : base_url('assets/img/necis_logo.png'); ?>
     <link rel="shortcut icon" href="<?= $logo_app ?>" type="image/png">
 
     <!-- Required CSS -->

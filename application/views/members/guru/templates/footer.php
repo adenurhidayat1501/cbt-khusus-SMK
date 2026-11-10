@@ -3,7 +3,7 @@
 
 <!-- Main Footer -->
 <footer class="main-footer">
-    <strong>SADUCI CBT</strong> v.<?= APP_VERSION ?> - SMP Negeri Satu Atap 2 Cipatujah
+    <strong>Necis CBT by Dado</strong> v.<?= APP_VERSION ?> - SMK NEGERI CIPATUJAH
     <div class="float-right d-none d-sm-inline-block">
         <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
         <b>V.</b>3.0.5

@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # ==============================================================================
-# SADUCI CBT - Automated VPS Installer Script (Ubuntu / Debian)
-# SMP NEGERI SATU ATAP 2 CIPATUJAH
+# Necis CBT by Dado - Automated VPS Installer Script (Ubuntu / Debian)
+# SMK NEGERI CIPATUJAH
 # Modernized Edition (2024-2026)
 # ==============================================================================
 # Usage:
@@ -31,8 +31,8 @@ fi
 
 echo -e "${CYAN}${BOLD}"
 echo "======================================================================"
-echo "          SADUCI CBT - AUTOMATED VPS INSTALLER SCRIPT                 "
-echo "              SMP NEGERI SATU ATAP 2 CIPATUJAH                        "
+echo "          Necis CBT by Dado - AUTOMATED VPS INSTALLER SCRIPT                 "
+echo "              SMK NEGERI CIPATUJAH                        "
 echo "                 Modernized Edition (2024-2026)                       "
 echo "======================================================================"
 echo -e "${NC}"
@@ -79,15 +79,15 @@ fi
 if [ "$SRC_DIR" = "/var/www/garudacbt" ]; then
     WEB_ROOT="/var/www/garudacbt"
 else
-    WEB_ROOT="/var/www/saduci_cbt"
+    WEB_ROOT="/var/www/necis_cbt"
 fi
 
-DEFAULT_DB_NAME="saduci_cbt"
-DEFAULT_DB_USER="saduci_cbt"
-DEFAULT_DB_PASS="saduci123"
+DEFAULT_DB_NAME="necis_cbt"
+DEFAULT_DB_USER="necis_cbt"
+DEFAULT_DB_PASS="necis123"
 
 echo -e "${YELLOW}${BOLD}======================================================================${NC}"
-echo -e "${YELLOW}${BOLD}           PANDUAN SETUP DATABASE SADUCI CBT                          ${NC}"
+echo -e "${YELLOW}${BOLD}           PANDUAN SETUP DATABASE Necis CBT by Dado                          ${NC}"
 echo -e "${YELLOW}${BOLD}======================================================================${NC}"
 echo -e "Silakan tentukan nama database dan kredensial yang Anda inginkan."
 echo -e "Tekan [ENTER] langsung jika ingin menggunakan nilai rekomendasi [ ]: \n"
@@ -219,13 +219,13 @@ else
         echo -e "${YELLOW}[!] File master.sql tidak ditemukan di $SQL_FILE, lewati impor.${NC}"
     fi
 
-    # Ensure school setting is configured as SADUCI CBT & fix schema defaults
-    mariadb "$DB_NAME" -e "INSERT INTO \`setting\` (\`id_setting\`, \`kode_sekolah\`, \`sekolah\`, \`nama_aplikasi\`, \`alamat\`, \`desa\`, \`kecamatan\`, \`kota\`, \`provinsi\`, \`logo_kanan\`, \`logo_kiri\`, \`versi\`) VALUES (1, 'SADUCI', 'SMP NEGERI SATU ATAP 2 CIPATUJAH', 'SADUCI CBT', 'Cipatujah', 'Cipatujah', 'Cipatujah', 'Kab. Tasikmalaya', 'Jawa Barat', 'assets/img/saduci_logo.png', 'assets/img/saduci_logo.png', '1.5.3') ON DUPLICATE KEY UPDATE \`nama_aplikasi\` = 'SADUCI CBT', \`sekolah\` = 'SMP NEGERI SATU ATAP 2 CIPATUJAH', \`kota\` = 'Kab. Tasikmalaya', \`logo_kanan\` = 'assets/img/saduci_logo.png', \`logo_kiri\` = 'assets/img/saduci_logo.png';" 2>/dev/null || true
+    # Ensure school setting is configured as Necis CBT by Dado & fix schema defaults
+    mariadb "$DB_NAME" -e "INSERT INTO \`setting\` (\`id_setting\`, \`kode_sekolah\`, \`sekolah\`, \`nama_aplikasi\`, \`alamat\`, \`desa\`, \`kecamatan\`, \`kota\`, \`provinsi\`, \`logo_kanan\`, \`logo_kiri\`, \`versi\`) VALUES (1, 'NECIS', 'SMK NEGERI CIPATUJAH', 'Necis CBT by Dado', 'Cipatujah', 'Cipatujah', 'Cipatujah', 'Kab. Tasikmalaya', 'Jawa Barat', 'assets/img/necis_logo.png', 'assets/img/necis_logo.png', '1.5.3') ON DUPLICATE KEY UPDATE \`nama_aplikasi\` = 'Necis CBT by Dado', \`sekolah\` = 'SMK NEGERI CIPATUJAH', \`kota\` = 'Kab. Tasikmalaya', \`logo_kanan\` = 'assets/img/necis_logo.png', \`logo_kiri\` = 'assets/img/necis_logo.png';" 2>/dev/null || true
     mariadb "$DB_NAME" -e "ALTER TABLE \`master_tp\` MODIFY \`active\` int(11) NOT NULL DEFAULT 0; ALTER TABLE \`master_kelas\` MODIFY \`jurusan_id\` int(11) NOT NULL DEFAULT 0;" 2>/dev/null || true
 
     # Ensure default admin user exists
     ADMIN_HASH=$(php -r "echo password_hash('admin', PASSWORD_BCRYPT);" 2>/dev/null || echo '$2y$10$wO3t4hNl7m7r6T4G2fF3NuR9y7eM5uB2wE4pP8gL4uP8pL7vAeLq2')
-    mariadb "$DB_NAME" -e "INSERT INTO \`users\` (\`id\`, \`ip_address\`, \`username\`, \`password\`, \`email\`, \`created_on\`, \`active\`, \`first_name\`, \`last_name\`) VALUES (1, '127.0.0.1', 'admin', '$ADMIN_HASH', 'admin@saduci.sch.id', UNIX_TIMESTAMP(), 1, 'Administrator', 'SADUCI') ON DUPLICATE KEY UPDATE \`id\` = 1;" 2>/dev/null || true
+    mariadb "$DB_NAME" -e "INSERT INTO \`users\` (\`id\`, \`ip_address\`, \`username\`, \`password\`, \`email\`, \`created_on\`, \`active\`, \`first_name\`, \`last_name\`) VALUES (1, '127.0.0.1', 'admin', '$ADMIN_HASH', 'admin@smkncipatujah.sch.id', UNIX_TIMESTAMP(), 1, 'Administrator', 'NECIS') ON DUPLICATE KEY UPDATE \`id\` = 1;" 2>/dev/null || true
     mariadb "$DB_NAME" -e "INSERT INTO \`users_groups\` (\`id\`, \`user_id\`, \`group_id\`) VALUES (1, 1, 1) ON DUPLICATE KEY UPDATE \`group_id\` = 1;" 2>/dev/null || true
 fi
 
@@ -287,7 +287,7 @@ fi
 echo -e "${BLUE}[6/7] Mengonfigurasi Apache VirtualHost...${NC}"
 a2enmod rewrite headers expires ssl 2>/dev/null || true
 
-VHOST_FILE="/etc/apache2/sites-available/saduci_cbt.conf"
+VHOST_FILE="/etc/apache2/sites-available/necis_cbt.conf"
 cat <<EOF > "$VHOST_FILE"
 <VirtualHost *:80>
     ServerName $SERVER_DOMAIN
@@ -299,14 +299,14 @@ cat <<EOF > "$VHOST_FILE"
         Require all granted
     </Directory>
 
-    ErrorLog \${APACHE_LOG_DIR}/saduci_cbt_error.log
-    CustomLog \${APACHE_LOG_DIR}/saduci_cbt_access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/necis_cbt_error.log
+    CustomLog \${APACHE_LOG_DIR}/necis_cbt_access.log combined
 </VirtualHost>
 EOF
 
 # Enable site & disable default 000-default and legacy garudacbt
 a2dissite 000-default.conf garudacbt.conf 2>/dev/null || true
-a2ensite saduci_cbt.conf
+a2ensite necis_cbt.conf
 
 # Restart Apache
 systemctl restart apache2
@@ -332,8 +332,8 @@ fi
 # 9. Installation Complete Summary
 # ------------------------------------------------------------------------------
 echo -e "\n${GREEN}${BOLD}======================================================================${NC}"
-echo -e "${GREEN}${BOLD}        INSTALASI SADUCI CBT BERHASIL DISELESAIKAN!                   ${NC}"
-echo -e "${GREEN}${BOLD}             SMP NEGERI SATU ATAP 2 CIPATUJAH                         ${NC}"
+echo -e "${GREEN}${BOLD}        INSTALASI Necis CBT by Dado BERHASIL DISELESAIKAN!                   ${NC}"
+echo -e "${GREEN}${BOLD}             SMK NEGERI CIPATUJAH                         ${NC}"
 echo -e "${GREEN}${BOLD}======================================================================${NC}"
 echo ""
 echo -e "  Akses Server     : ${CYAN}http://$SERVER_DOMAIN/${NC}"
@@ -359,6 +359,6 @@ echo ""
 echo -e "  ${BOLD}Perintah Berguna:${NC}"
 echo -e "  Restart Apache   : ${CYAN}sudo systemctl restart apache2${NC}"
 echo -e "  Restart Database : ${CYAN}sudo systemctl restart mariadb${NC}"
-echo -e "  Cek Log Error    : ${CYAN}sudo tail -f /var/log/apache2/saduci_cbt_error.log${NC}"
+echo -e "  Cek Log Error    : ${CYAN}sudo tail -f /var/log/apache2/necis_cbt_error.log${NC}"
 echo -e "${GREEN}======================================================================${NC}\n"
 

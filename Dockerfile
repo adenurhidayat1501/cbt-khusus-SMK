@@ -1,6 +1,6 @@
-FROM php:7.4-apache
+﻿FROM php:7.4-apache
 
-# Install system dependencies and PHP extensions required by CodeIgniter 3 & SADUCI CBT
+# Install system dependencies and PHP extensions required by CodeIgniter 3 & Necis CBT by Dado
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \

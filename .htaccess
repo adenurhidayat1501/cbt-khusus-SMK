@@ -1,12 +1,31 @@
 Options -Indexes
 
 <FilesMatch "(?i)\.(sql|log|env|git.*)$">
-    Order Deny,Allow
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Deny,Allow
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php/$1 [L]
-php_value max_input_vars 10000
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+</IfModule>
+
+<IfModule mod_php7.c>
+    php_value max_input_vars 10000
+    php_value upload_max_filesize 128M
+    php_value post_max_size 128M
+    php_value memory_limit 512M
+</IfModule>
+<IfModule mod_php.c>
+    php_value max_input_vars 10000
+    php_value upload_max_filesize 128M
+    php_value post_max_size 128M
+    php_value memory_limit 512M
+</IfModule>

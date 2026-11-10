@@ -1,12 +1,26 @@
 <?php
 if (!defined('BASEPATH')) define('BASEPATH', TRUE);
 $db_config_path = '../application/config/database.php';
+$is_installed = false;
+
 if (file_exists($db_config_path)) {
     include($db_config_path);
     if (isset($db['default']['database']) && !empty($db['default']['database'])) {
-        header("Location: ../");
-        exit("<script>window.location.href='../';</script><h3>Installer Terkunci</h3><p>Aplikasi SADUCI CBT sudah terkonfigurasi pada server ini.</p><p><a href='../' style='padding: 8px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 4px;'>Masuk ke Halaman Login CBT</a></p>");
+        $mysqli = @new mysqli($db['default']['hostname'], $db['default']['username'], $db['default']['password'], $db['default']['database']);
+        if (!$mysqli->connect_errno) {
+            $check = $mysqli->query("SHOW TABLES LIKE 'users'");
+            if ($check && $check->num_rows > 0) {
+                $is_installed = true;
+            }
+            if ($check) $check->close();
+            $mysqli->close();
+        }
     }
+}
+
+if ($is_installed && !isset($_GET['force'])) {
+    header("Location: ../");
+    exit("<script>window.location.href='../';</script><h3>Installer Terkunci</h3><p>Aplikasi Necis CBT by Dado dan database sudah siap digunakan.</p><p><a href='../' style='padding: 8px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 4px;'>Masuk ke Halaman Login CBT</a> &nbsp; <a href='?force=1' style='padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;'>Buka Ulang Installer</a></p>");
 }
 
 $base_url = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
@@ -21,10 +35,10 @@ $base_url = str_replace('installer/', '', $base_url);
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="SADUCI CBT - SMP NEGERI SATU ATAP 2 CIPATUJAH">
-    <meta name="author" content="SMP NEGERI SATU ATAP 2 CIPATUJAH">
+    <meta name="description" content="Necis CBT by Dado - SMK NEGERI CIPATUJAH">
+    <meta name="author" content="Dado - SMK NEGERI CIPATUJAH">
 
-    <title>SADUCI CBT Installer</title>
+    <title>Necis CBT by Dado Installer</title>
 
     <link rel="shortcut icon" href="<?= $base_url ?>assets/img/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="<?= $base_url ?>assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
@@ -44,11 +58,11 @@ $base_url = str_replace('installer/', '', $base_url);
             <div class="col-lg-6 d-lg-flex flex-lg-column justify-content-center align-items-stretch pt-5 pt-lg-0 aos-init aos-animate" data-aos="fade-up">
                 <div class="text-center text-md-left">
                     <div class="mb-3 text-white d-flex align-items-center justify-content-center justify-content-md-start">
-                        <img style="width:75px; height:auto; margin-right: 15px;" src="<?= $base_url ?>assets/img/saduci_logo.png" alt="SADUCI Logo">
-                        <span class="h1 align-bottom font-weight-bold mb-0">SADUCI CBT</span>
+                        <img style="width:75px; height:auto; margin-right: 15px;" src="<?= $base_url ?>assets/img/necis_logo.png" alt="Necis CBT Logo">
+                        <span class="h1 align-bottom font-weight-bold mb-0">Necis CBT by Dado</span>
                     </div>
                     <div class="h3 text-white font-weight-light">
-                        SMP NEGERI SATU ATAP 2 CIPATUJAH
+                        SMK NEGERI CIPATUJAH
                     </div>
                     <p class="text-white-50">Kab. Tasikmalaya - Sistem Computer Based Test & E-Learning</p>
                 </div>
@@ -57,25 +71,27 @@ $base_url = str_replace('installer/', '', $base_url);
                 <div class="card" style="background-color: rgba(255,255,255,.7);">
                     <div class="card-body">
                         <form action="#" id="create" method="post" accept-charset="utf-8">
+                            <div class="alert alert-info py-2 px-3 mb-3 text-sm">
+                                <i class="fas fa-info-circle mr-1"></i> <b>Konfigurasi Standar Localhost:</b> Form sudah terisi otomatis untuk XAMPP/Laragon. Cukup klik tombol <b>INSTALL / UPDATE</b> di bawah!
+                            </div>
                             <div class="row">
                                 <div class="form-group col-12">
-                                    <label for="input-nama-db">Host Name</label>
-                                    <input type="text" class="form-control db" id="input-nama-host" name="hostname" value="" placeholder="localhost" required="">
+                                    <label for="input-nama-host">Host Name</label>
+                                    <input type="text" class="form-control db" id="input-nama-host" name="hostname" value="localhost" placeholder="localhost" required="">
                                 </div>
                                 <div class="form-group col-12" required="">
-                                    <label for="input-nama-db">Host Username</label>
-                                    <input type="text" class="form-control db" id="input-user-host" name="username" value="" placeholder="Host Username">
+                                    <label for="input-user-host">Host Username</label>
+                                    <input type="text" class="form-control db" id="input-user-host" name="username" value="root" placeholder="root">
                                 </div>
-                                <div class="form-group col-12" required="">
-                                    <label for="input-nama-db">Host Password</label>
-                                    <input type="text" class="form-control" id="input-pass-host" value="" name="password" placeholder="Host Password">
-                                    <small class="form-text text-muted">Kosongkan jika tidak menggunakan password.
-                                    </small>
+                                <div class="form-group col-12">
+                                    <label for="input-pass-host">Host Password</label>
+                                    <input type="password" class="form-control" id="input-pass-host" value="" name="password" placeholder="Kosongkan jika default XAMPP/Laragon">
+                                    <small class="form-text text-muted">Kosongkan jika MySQL tanpa password (standar XAMPP/Laragon).</small>
                                 </div>
                                 <div class="form-group col-12" required="">
                                     <label for="input-nama-db">Nama Database</label>
-                                    <input type="text" class="form-control db" id="input-nama-db" name="database" value="" placeholder="Nama Database">
-                                    <small class="form-text text-muted">Jangan gunakan spasi.</small>
+                                    <input type="text" class="form-control db" id="input-nama-db" name="database" value="necis_cbt" placeholder="necis_cbt">
+                                    <small class="form-text text-muted">Database akan dibuat otomatis dan diisi tabel <code>master.sql</code>.</small>
                                 </div>
                             </div>
                             <div class="d-flex flex-wrap align-items-center justify-content-end">

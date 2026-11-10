@@ -14,10 +14,10 @@
             <div class="row align-items-center">
                 <div class="col-sm-6 col-12 mb-2 mb-sm-0">
                     <div class="exam-brand-badge">
-                        <img src="<?= base_url() ?>assets/img/saduci_logo.png" width="48" height="48" alt="SADUCI CBT">
+                        <img src="<?= base_url() ?>assets/img/necis_logo.png" width="48" height="48" alt="Necis CBT by Dado">
                         <div>
-                            <h4 class="text-white mb-0 font-weight-bold" style="letter-spacing: -0.02em;">SADUCI CBT</h4>
-                            <small class="text-white-50 text-uppercase font-weight-bold" style="letter-spacing: 0.08em; font-size: 11px;">SMPN SATU ATAP 2 CIPATUJAH</small>
+                            <h4 class="text-white mb-0 font-weight-bold" style="letter-spacing: -0.02em;">Necis CBT by Dado</h4>
+                            <small class="text-white-50 text-uppercase font-weight-bold" style="letter-spacing: 0.08em; font-size: 11px;">SMK NEGERI CIPATUJAH</small>
                         </div>
                     </div>
                 </div>

@@ -7,9 +7,9 @@ $query_builder = TRUE;
 $db['default'] = array(
     'dsn'	=> '',
     'hostname' => getenv('DB_HOST') ? getenv('DB_HOST') : 'localhost',
-    'username' => getenv('DB_USER') ? getenv('DB_USER') : '',
-    'password' => getenv('DB_PASS') ? getenv('DB_PASS') : '',
-    'database' => getenv('DB_NAME') ? getenv('DB_NAME') : '',
+    'username' => getenv('DB_USER') !== false ? getenv('DB_USER') : 'root',
+    'password' => getenv('DB_PASS') !== false ? getenv('DB_PASS') : '',
+    'database' => getenv('DB_NAME') ? getenv('DB_NAME') : 'necis_cbt',
     'dbdriver' => 'mysqli',
     'dbprefix' => '',
     'pconnect' => FALSE,
